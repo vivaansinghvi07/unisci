@@ -1,15 +1,15 @@
-from unit import Unit
-from error import UnitError
+from unit import Quantity
+from error import QuantityError
 from constants import *
 
-def convert_length(unit: Unit, target: str, original: str = None) -> Unit:
+def convert_length(unit: Quantity, target: str, original: str = None) -> Quantity:
 
     """
-    Arguments: a Unit object, an original unit and a target unit. If original is not entered, it is automatically interpreted.
+    Arguments: a Quantity object, an original unit and a target unit. If original is not entered, it is automatically interpreted.
 
-    Raises: a UnitError if the unit entered is not supported.
+    Raises: a QuantityError if the unit entered is not supported.
 
-    Returns: a new Unit object, with the original unit converted to the target unit. 
+    Returns: a new Quantity object, with the original unit converted to the target unit. 
     """
 
     CONVERT_TO_METERS = {
@@ -22,9 +22,9 @@ def convert_length(unit: Unit, target: str, original: str = None) -> Unit:
 
     # checks for illegal values
     if (target not in CONVERT_TO_METERS):
-        raise UnitError("Target unit is not supported in this function.")
+        raise QuantityError("Target unit is not supported in this function.")
     elif original != None and original not in CONVERT_TO_METERS:
-        raise UnitError("Original unit is not supported in this function.")
+        raise QuantityError("Original unit is not supported in this function.")
     
     # auto-determines and converts every source unit
     conversion_factor = 1
@@ -37,7 +37,8 @@ def convert_length(unit: Unit, target: str, original: str = None) -> Unit:
             new_units[type] = unit.unit_type[type]
 
     # returns a new unit with the conversion applied
-    return Unit(conversion_factor * unit.number, new_units)
+    return Quantity(conversion_factor * unit.number, new_units)
 
-def convert_temperature(unit: Unit, target: str, original: str = None) -> Unit:
-    pass
+    
+
+
