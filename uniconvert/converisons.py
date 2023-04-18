@@ -1,4 +1,4 @@
-from unit import Quantity
+from units import Quantity
 from error import QuantityError
 from constants import *
 
