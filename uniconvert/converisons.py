@@ -38,20 +38,12 @@ def convert_length(unit: Unit, target: str, original: str = None) -> Unit:
     # auto-determines and converts every source unit
     conversion_factor = 1
     new_units = {target: 0}
-    if original == None:
-        for type in unit.unit_type: 
-            if type in CONVERT_TO_METERS:
-                conversion_factor *= (CONVERT_TO_METERS[type] * CONVERT_FROM_METERS[target]) ** unit.unit_type[type]
-                new_units[target] += unit.unit_type[type]
-            else:
-                new_units[type] = unit.unit_type[type]
-    else:
-        for type in unit.unit_type:
-            if type == original:
-                conversion_factor *= (CONVERT_TO_METERS[type] * CONVERT_FROM_METERS[target]) ** unit.unit_type[type]
-                new_units[target] = unit.unit_type[original]
-            else:
-                new_units[type] = unit.unit_type[type]
+    for type in unit.unit_type: 
+        if (original == None and type in CONVERT_TO_METERS) or (original != None and type == original):
+            conversion_factor *= (CONVERT_TO_METERS[type] * CONVERT_FROM_METERS[target]) ** unit.unit_type[type]
+            new_units[target] += unit.unit_type[type]
+        else:
+            new_units[type] = unit.unit_type[type]
 
     # returns a new unit with the conversion applied
     return Unit(conversion_factor * unit.number, new_units)
