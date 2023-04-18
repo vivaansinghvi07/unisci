@@ -1,4 +1,5 @@
 from typing import Union
+from error import UnitError
 
 class Quantity:
 
@@ -69,10 +70,13 @@ class Quantity:
             output += Quantity._NEG_EXP
             power = abs(power)
 
-
         # adds the digits
         for digit in str(power):
             output += Quantity._EXP_CHARS[int(digit)]
+
+        # adds degree symbol for temperature unit
+        if unit.upper() in ['F', 'C']:
+            output = Temperature.DEG_SYMB + output
 
         return output
     
@@ -86,8 +90,89 @@ class Quantity:
 
         self.number = round(self.number, digs)
 
-    def _standardize(self):
-        pass
-
 class Temperature:
-    pass
+
+    DEG_SYMB = "°"
+
+    def __init__(self, number: Union[int, float], type: str):
+
+        """
+        Arguments: Number (number for the temperature), type of the temperature (enter 'C', 'K', or 'F')
+        Quantity objects can have temperature units, but they cannot be converted. Temperature objects can be.
+
+        Raises: UnitError if there is a wrong unit of measurement
+        """
+
+        if type.upper() not in ['C', 'K', 'F']:
+            raise UnitError(f"Invalid unit of measurement for a temperature: '{type}'")
+
+        self.type = type.upper()
+        self.number = number
+
+    def __str__(self):
+        """
+        Returns the temperature in the form <number> <symbol>. For example, '100 K' or '50°F'
+        """
+        symbol = Temperature.DEG_SYMB if self.type != 'K' else ' '
+        return f"{self.number}{symbol}{self.type}"
+
+    @property
+    def celsius(self):
+        """
+        Returns the temperature in degrees Celsius
+        """
+        if self.type == 'C':
+            return self.number
+        elif self.type == 'F':
+            return (self.number - 32) * 5 / 9
+        elif self.type == 'K':
+            return self.number - 273
+        
+    @property
+    def fahrenheit(self):
+        """
+        Returns the temperature in degrees Fahrenheit
+        """
+        if self.type == 'F':
+            return self.number
+        elif self.type == 'C':
+            return self.number * (9 / 5) + 32
+        elif self.type == 'K':
+            return (self.number + 273) * (9 / 5) + 32
+        
+    @property
+    def kelvin(self):
+        """
+        Returns the temperature in Kelvin
+        """ 
+        if self.type == 'K':
+            return self.number
+        elif self.type == 'C':
+            return self.number + 273
+        elif self.type == 'F':
+            return (self.number - 32) * (5 / 9) + 273
+    
+    def convert(self, target: str):
+        """
+        Arguments: A single character representing the unit of the target temperature (eg 'K' or 'F')
+
+        Raises: UnitError for a wrong temperature unit
+        """
+
+        # standardize to uppercase
+        target = target.upper()
+
+        # check for invalid
+        if target not in ['F', 'C', 'K']:
+            raise UnitError(f"Target unit '{target}' is not a supported temperature.")
+        
+        # perform number conversion
+        if target == 'K':
+            self.number = self.kelvin
+        elif target == 'C':
+            self.number = self.celsius
+        elif target == 'F':
+            self.number = self.fahrenheit
+
+        # update type
+        self.type == target
