@@ -13,21 +13,12 @@ def convert_length(unit: Unit, target: str, original: str = None) -> Unit:
     """
 
     CONVERT_TO_METERS = {
-        'ft': 0.3048, 
-        'yd': 0.9144,
-        'in': 0.0254,
-        'mi': 1609,
-        'ly': 946 * 10**13,
-        'au': 1496 * 10**8,
-        'pc': 31 * 10**15,
-        'm': 1
+        'ft': 0.3048, 'yd': 0.9144, 'in': 0.0254, 'mi': 1609, 'ly': 946 * 10**13,
+        'au': 1496 * 10**8, 'pc': 31 * 10**15, 'm': 1, 'nm': 10**(-9), 'mcm': 10**(-6),
+        'mm': 10**(-3), 'cm': 10**(-2), 'km': 10**3, 'Mm': 10**6, 'Gm': 10**9
     }
     
     CONVERT_FROM_METERS = {key: 1 / value for key, value in CONVERT_TO_METERS.items()}
-
-    # format to lowercase
-    if original != None: original = original.lower()
-    target = target.lower()
 
     # checks for illegal values
     if (target not in CONVERT_TO_METERS):
