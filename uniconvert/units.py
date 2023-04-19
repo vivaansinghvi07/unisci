@@ -7,7 +7,17 @@ class Quantity:
 
     _EXP_CHARS = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
     _NEG_EXP = "⁻"
-    
+
+    precision = 3
+
+    def set_precision(decimal_places: int):
+
+        """
+        Sets the precision of quantity printing. A precision of '3' means 123456 would be printed as 1.234*10⁵
+        """
+
+        Quantity.precision = decimal_places
+
     def __init__(self, number: Union[int, float], unit_type: dict):
         """
         Arguments: Enter the number of the measurement, and a dictionary in the form of {unit: power}. For example, 10 m/s becomes Quantity(10, {'m': 1, 's': -1})
@@ -33,8 +43,8 @@ class Quantity:
 
         # formats and returns string
         self._rm_zeroes()
-        units = "-".join([Quantity._get_exp(unit, power) for unit, power in self.unit_type.items()])
-        return f"{self.number} {units}"
+        units = "-".join([Quantity._format_unit(unit, power) for unit, power in self.unit_type.items()])
+        return f"{Quantity._format_num(self.number)} {units}"
     
     def __repr__(self) -> str:
         
@@ -92,7 +102,27 @@ class Quantity:
             if self.unit_type[key] == 0:
                 del self.unit_type[key]
 
-    def _get_exp(unit: str, power: int) -> str:
+
+    def _format_num(num: Union[int, float]):
+
+        # formats number and gets exponent
+        rounded_num = format(num, f".{Quantity.precision}e")
+        number, exp = rounded_num.split("e")
+
+        # fills exponent string
+        exp_string = "10"
+        for digit in exp:
+            if digit == "+":
+                continue
+            elif digit == "-":
+                exp_string += Quantity._NEG_EXP
+            else:
+                exp_string += Quantity._EXP_CHARS[int(digit)]
+
+        # returns formatted number
+        return f"{number}*{exp_string}"
+
+    def _format_unit(unit: str, power: int) -> str:
         """
         Arguments: An integer power to raise the number to
 
@@ -144,16 +174,6 @@ class Quantity:
                 raise UnitError(f"Unsupported unit provided: '{conversion}'.")
 
         return output
-
-    def round(self, digs: int):
-
-        """
-        Rounds the number of the Quantity object to a certain number of digits.
-
-        Helpful if you want to print it with rounding.
-        """
-
-        self.number = round(self.number, digs)
 
     def _converted(self, factors: dict, target: str, original: str = None) -> Quantity:
 
@@ -323,3 +343,4 @@ class Temperature:
 
         # update type
         self.type == target
+
