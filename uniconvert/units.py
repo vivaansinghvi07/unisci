@@ -35,7 +35,7 @@ class Quantity:
         
         # assigns unit settings, each key is in lowercase
         self.unit_type = {key: value for key, value in unit_type.items()}
-        self._rm_zeroes()
+        self.__rm_zeroes()
         
     def __str__(self) -> str:
 
@@ -44,7 +44,7 @@ class Quantity:
         """
 
         # formats and returns string
-        self._rm_zeroes()
+        self.__rm_zeroes()
 
         # filter positives and negatives
         pos, neg = {}, {}
@@ -55,8 +55,8 @@ class Quantity:
                 pos[key] = value
 
         # gets positive and negative values
-        pos_units = "-".join([Quantity._format_unit(unit, power) for unit, power in pos.items()])
-        neg_units = "-".join([Quantity._format_unit(unit, power) for unit, power in neg.items()])
+        pos_units = "-".join([Quantity.__format_unit(unit, power) for unit, power in pos.items()])
+        neg_units = "-".join([Quantity.__format_unit(unit, power) for unit, power in neg.items()])
 
         # creates and returns string for units
         if len(pos_units) == 0:
@@ -65,7 +65,7 @@ class Quantity:
             units = f"{pos_units}"
         else:
             units = f"{pos_units}/{neg_units}"
-        return f"{Quantity._format_num(self.number)} {units}"
+        return f"{Quantity.__format_num(self.number)} {units}"
     
     def __repr__(self) -> str:
         
@@ -136,7 +136,7 @@ class Quantity:
 
         return output
 
-    def _rm_zeroes(self):
+    def __rm_zeroes(self):
         
         """
         Removes all units that are to the power of 0.
@@ -146,7 +146,7 @@ class Quantity:
             if self.unit_type[key] == 0:
                 del self.unit_type[key]
 
-    def _format_num(num: Union[int, float]) -> str:
+    def __format_num(num: Union[int, float]) -> str:
 
         """
         Formats the number of a Quantity for printing.
@@ -176,7 +176,7 @@ class Quantity:
         # returns formatted number
         return f"{number}*{exp_string}"
 
-    def _format_unit(unit: str, power: int) -> str:
+    def __format_unit(unit: str, power: int) -> str:
         """
         Arguments: An integer power to raise the number to
 
@@ -227,7 +227,7 @@ class Quantity:
 
         return output
 
-    def _converted(self, factors: dict, target: str, original: str = None) -> Quantity:
+    def __converted(self, factors: dict, target: str, original: str = None) -> Quantity:
 
         """
         Arguments: a dictionary of conversion factors in this format: {'supported': LIST1, 'to': DICT1, 'from': DICT2}, 
@@ -271,7 +271,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self._converted(factors={
+        return self.__converted(factors={
             'supported': LENGTH_UNITS,
             'to': CONVERT_TO_METERS,
             'from': CONVERT_FROM_METERS
@@ -287,7 +287,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self._converted(factors={
+        return self.__converted(factors={
             'supported': MASS_UNITS,
             'to': CONVERT_TO_KILOGRAMS,
             'from': CONVERT_FROM_KILOGRAMS
@@ -303,7 +303,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self._converted(factors={
+        return self.__converted(factors={
             'supported': TIME_UNITS,
             'to': CONVERT_TO_SECONDS,
             'from': CONVERT_FROM_SECONDS
