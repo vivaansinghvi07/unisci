@@ -1,5 +1,7 @@
+from __future__ import annotations
 from typing import Union
-from error import UnitError
+from .error import UnitError
+from .conversion_factors import *
 
 class Quantity:
 
@@ -23,7 +25,7 @@ class Quantity:
         self.unit_type = {key: value for key, value in unit_type.items()}
         self._rm_zeroes()
         
-    def __str__(self):
+    def __str__(self) -> str:
 
         """
         Returns the unit as if it was written. Ex: '100.0 m' or '120 ft/s'
@@ -34,12 +36,51 @@ class Quantity:
         units = "-".join([Quantity._get_exp(unit, power) for unit, power in self.unit_type.items()])
         return f"{self.number} {units}"
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         
         """
-        Returns how the unit would be constructed.
+        Returns: how the unit would be constructed.
         """
-        pass
+        return f"Quantity({self.number}, {self.unit_type})"
+    
+    def __copy__(self) -> Quantity:
+        
+        """
+        Returns: a new copy of the Quantity without changing the dictionary
+        """
+
+        return Quantity(self.number, self.unit_type.copy())
+    
+    def __mul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+        """
+        Arguments: A Quantity, Temperature, or number to which you want to multiply the quantity
+
+        Raises: UnsupportedError, for a class that is not supported in multiplication
+
+        Returns: A new Quantity with multiplied units and numbers
+        """
+
+        # copies unit types for returning
+        new_types = self.unit_type.copy()
+
+        # checks if its a number
+        if isinstance(other, int) or isinstance(other, float):
+            return Quantity(self.number * other, new_types)
+        elif isinstance(other, Temperature):
+            if other.type in new_types:
+                new_types[other.type] += 1
+            else:
+                new_types[other.type] = 1
+            return Quantity(self.number * other.number, new_types)
+        elif isinstance(other, Quantity):
+            for type, power in other.unit_type.items():
+                if type not in new_types:
+                    new_types[type] = power
+                else:
+                    new_types[type] += power
+            return Quantity(self.number * other.number, new_types)
+        else:
+            raise TypeError("Invalid type for Quantity multiplication.")
 
     def _rm_zeroes(self):
         
@@ -80,6 +121,30 @@ class Quantity:
 
         return output
     
+    def converted_auto(self, target_units: list) -> Quantity:
+
+        """
+        Arguments: A list of units to convert to. The program will try to convert the Quantity to each unit provided in this list.
+
+        Raises: UnitError for unsupported units.
+        
+        Returns: a new Quantity object with possible unit converted to the other_conversions, if possible.
+        """
+
+        output = self.__copy__()
+
+        for conversion in target_units:
+            if conversion in LENGTH_UNITS:
+                output = output.converted_length(conversion)
+            elif conversion in MASS_UNITS:
+                output = output.converted_mass(conversion)
+            elif conversion in TIME_UNITS:
+                output = output.converted_time(conversion)
+            else:
+                raise UnitError(f"Unsupported unit provided: '{conversion}'.")
+
+        return output
+
     def round(self, digs: int):
 
         """
@@ -89,6 +154,88 @@ class Quantity:
         """
 
         self.number = round(self.number, digs)
+
+    def _converted(self, factors: dict, target: str, original: str = None) -> Quantity:
+
+        """
+        Arguments: a dictionary of conversion factors in this format: {'units': LIST1, 'to': DICT1, 'from': DICT2}, 
+        where units are the supported units for the conversion. Also takes in the target unit and original unit. 
+        If original is not entered, it is automatically interpreted.
+        
+        Returns: a new Quantity with the conversion being done on it
+        """
+
+        # loads dictionaries
+        supported = factors['units']
+        to_dict = factors['to']
+        from_dict = factors['from']
+
+        # checks for illegal values
+        if (target not in supported):
+            raise UnitError("Target unit is not supported in this function.")
+        elif original != None and original not in supported:
+            raise UnitError("Original unit is not supported in this function.")
+        
+        # auto-determines and converts every source unit
+        conversion_factor = 1
+        new_units = {target: 0}
+        for type in self.unit_type: 
+            if (original == None and type in supported) or (original != None and type == original):
+                conversion_factor *= (to_dict[type] * from_dict[target]) ** self.unit_type[type]
+                new_units[target] += self.unit_type[type]
+            else:
+                new_units[type] = self.unit_type[type]
+
+        # returns a new unit with the conversion applied
+        return Quantity(conversion_factor * self.number, new_units)
+
+    def converted_length(self, target: str, original: str = None) -> Quantity:
+
+        """
+        Arguments: an original unit and a target unit. If original is not entered, it is automatically interpreted.
+
+        Raises: a UnitError if the unit entered is not supported.
+
+        Returns: a new Quantity object, with the original unit converted to the target unit. 
+        """
+
+        return self._converted(factors={
+            'units': LENGTH_UNITS,
+            'to': CONVERT_TO_METERS,
+            'from': CONVERT_FROM_METERS
+        }, target=target, original=original)
+    
+    def converted_mass(self, target: str, original: str = None) -> Quantity:
+        
+        """
+        Arguments: an original unit and a target unit. If original is not entered, it is automatically interpreted.
+
+        Raises: a UnitError if the unit entered is not supported.
+
+        Returns: a new Quantity object, with the original unit converted to the target unit. 
+        """
+
+        return self._converted(factors={
+            'units': MASS_UNITS,
+            'to': CONVERT_TO_KILOGRAMS,
+            'from': CONVERT_FROM_KILOGRAMS
+        }, target=target, original=original)
+
+    def converted_time(self, target: str, original: str = None) -> Quantity:
+        
+        """
+        Arguments: an original unit and a target unit. If original is not entered, it is automatically interpreted.
+
+        Raises: a UnitError if the unit entered is not supported.
+
+        Returns: a new Quantity object, with the original unit converted to the target unit. 
+        """
+
+        return self._converted(factors={
+            'units': TIME_UNITS,
+            'to': CONVERT_TO_SECONDS,
+            'from': CONVERT_FROM_SECONDS
+        }, target=target, original=original)
 
 class Temperature:
 
