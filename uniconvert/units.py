@@ -13,7 +13,9 @@ class Quantity:
     def set_precision(decimal_places: int):
 
         """
-        Sets the precision of quantity printing. A precision of '3' means 123456 would be printed as 1.234*10⁵
+        Sets the precision of quantity printing. 
+        
+        A precision of '3' means 123456 would be printed as 1.234*10⁵
         """
 
         Quantity.precision = decimal_places
@@ -102,8 +104,13 @@ class Quantity:
             if self.unit_type[key] == 0:
                 del self.unit_type[key]
 
+    def _format_num(num: Union[int, float]) -> str:
 
-    def _format_num(num: Union[int, float]):
+        """
+        Formats the number of a Quantity for printing.
+        
+        For example, 123456 with a precision of 2 becomes 1.23*10⁵
+        """
 
         # formats number and gets exponent
         rounded_num = format(num, f".{Quantity.precision}e")
