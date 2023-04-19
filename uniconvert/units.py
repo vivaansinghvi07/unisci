@@ -9,6 +9,7 @@ class Quantity:
     _NEG_EXP = "⁻"
 
     precision = 3
+    auto_format = True
 
     def set_precision(decimal_places: int):
 
@@ -19,6 +20,14 @@ class Quantity:
         """
 
         Quantity.precision = decimal_places
+
+    def auto_format(do: bool):
+        """
+        Sets instruction for values to auto-format, taking in a boolean for if it should or not.
+        For example, if a Quantity has units 'in' and 'm', auto format automatically converts it to either in² or m²
+        """
+
+        Quantity.auto_format = do
 
     def __init__(self, number: Union[int, float], unit_type: dict):
         """
@@ -97,12 +106,16 @@ class Quantity:
         # checks if its a number
         if isinstance(other, int) or isinstance(other, float):
             return Quantity(self.number * other, new_types)
+        
+        # checks if it is a temperature unit
         elif isinstance(other, Temperature):
             if other.type in new_types:
                 new_types[other.type] += 1
             else:
                 new_types[other.type] = 1
             return Quantity(self.number * other.number, new_types)
+        
+        # checks if it is a Quantity - account for every unit type in new Quantity
         elif isinstance(other, Quantity):
             for type, power in other.unit_type.items():
                 if type not in new_types:
@@ -110,6 +123,8 @@ class Quantity:
                 else:
                     new_types[type] += power
             return Quantity(self.number * other.number, new_types)
+        
+        # other types unsupported
         else:
             raise TypeError("Invalid type for Quantity multiplication.")
         
@@ -142,7 +157,7 @@ class Quantity:
         Removes all units that are to the power of 0.
         """
 
-        for key in list(self.unit_type):
+        for key in self.unit_type.keys():
             if self.unit_type[key] == 0:
                 del self.unit_type[key]
 
@@ -171,6 +186,12 @@ class Quantity:
         
         # remove leading zeroes
         exp_number_string = exp_number_string.lstrip(Quantity._EXP_CHARS[0])
+
+        # check if it was 0 to begin with 
+        if len(exp_number_string) == 0:
+            exp_number_string = Quantity._EXP_CHARS[0]
+        
+        # appends exponent
         exp_string += exp_number_string
 
         # returns formatted number
@@ -307,6 +328,22 @@ class Quantity:
             'supported': TIME_UNITS,
             'to': CONVERT_TO_SECONDS,
             'from': CONVERT_FROM_SECONDS
+        }, target=target, original=original)
+    
+    def converted_volume(self, target: str, original: str = None) -> Quantity:
+        
+        """
+        Arguments: an original unit and a target unit. If original is not entered, it is automatically interpreted.
+
+        Raises: a UnitError if the unit entered is not supported.
+
+        Returns: a new Quantity object, with the original unit converted to the target unit. 
+        """
+
+        return self.__converted(factors={
+            'supported': VOLUME_UNITS,
+            'to': CONVERT_TO_LITERS,
+            'from': CONVERT_FROM_LITERS
         }, target=target, original=original)
     
     def standardized(self):
