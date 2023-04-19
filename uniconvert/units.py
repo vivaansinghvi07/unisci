@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Union
-from .error import UnitError
-from .conversion_factors import *
+from uniconvert.error import UnitError
+from uniconvert.conversion_factors import *
 
 class Quantity:
 
@@ -45,7 +45,26 @@ class Quantity:
 
         # formats and returns string
         self._rm_zeroes()
-        units = "-".join([Quantity._format_unit(unit, power) for unit, power in self.unit_type.items()])
+
+        # filter positives and negatives
+        pos, neg = {}, {}
+        for key, value in self.unit_type.items():
+            if value < 0:
+                neg[key] = abs(value)
+            else:
+                pos[key] = value
+
+        # gets positive and negative values
+        pos_units = "-".join([Quantity._format_unit(unit, power) for unit, power in pos.items()])
+        neg_units = "-".join([Quantity._format_unit(unit, power) for unit, power in neg.items()])
+
+        # creates and returns string for units
+        if len(pos_units) == 0:
+            units = f"1/{neg_units}"
+        elif len(neg_units) == 0:
+            units = f"{pos_units}"
+        else:
+            units = f"{pos_units}/{neg_units}"
         return f"{Quantity._format_num(self.number)} {units}"
     
     def __repr__(self) -> str:
@@ -93,6 +112,29 @@ class Quantity:
             return Quantity(self.number * other.number, new_types)
         else:
             raise TypeError("Invalid type for Quantity multiplication.")
+        
+    def __rmul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+        """
+        Same as multiplication, but in reverse. 
+        See documentation of __mul__() for more info about multiplication.
+        """
+        return self.__mul__(other)
+        
+    def __pow__(self, power: int) -> Quantity:
+
+        """
+        Raises a Quantity to the power of an integer.
+        """
+
+        if not isinstance(power, int):
+            raise TypeError("Can only raise to the power of an integer.")
+
+        # performs <power> self multiplications
+        output = self.__copy__()
+        for _ in range(1, power):
+            output = output * self
+
+        return output
 
     def _rm_zeroes(self):
         
@@ -100,7 +142,7 @@ class Quantity:
         Removes all units that are to the power of 0.
         """
 
-        for key in self.unit_type:
+        for key in list(self.unit_type):
             if self.unit_type[key] == 0:
                 del self.unit_type[key]
 
@@ -182,15 +224,13 @@ class Quantity:
                 output = output.converted_mass(conversion)
             elif conversion in TIME_UNITS:
                 output = output.converted_time(conversion)
-            else:
-                raise UnitError(f"Unsupported unit provided: '{conversion}'.")
 
         return output
 
     def _converted(self, factors: dict, target: str, original: str = None) -> Quantity:
 
         """
-        Arguments: a dictionary of conversion factors in this format: {'units': LIST1, 'to': DICT1, 'from': DICT2}, 
+        Arguments: a dictionary of conversion factors in this format: {'supported': LIST1, 'to': DICT1, 'from': DICT2}, 
         where units are the supported units for the conversion. Also takes in the target unit and original unit. 
         If original is not entered, it is automatically interpreted.
         
@@ -198,7 +238,7 @@ class Quantity:
         """
 
         # loads dictionaries
-        supported = factors['units']
+        supported = factors['supported']
         to_dict = factors['to']
         from_dict = factors['from']
 
@@ -232,7 +272,7 @@ class Quantity:
         """
 
         return self._converted(factors={
-            'units': LENGTH_UNITS,
+            'supported': LENGTH_UNITS,
             'to': CONVERT_TO_METERS,
             'from': CONVERT_FROM_METERS
         }, target=target, original=original)
@@ -248,7 +288,7 @@ class Quantity:
         """
 
         return self._converted(factors={
-            'units': MASS_UNITS,
+            'supported': MASS_UNITS,
             'to': CONVERT_TO_KILOGRAMS,
             'from': CONVERT_FROM_KILOGRAMS
         }, target=target, original=original)
@@ -264,10 +304,20 @@ class Quantity:
         """
 
         return self._converted(factors={
-            'units': TIME_UNITS,
+            'supported': TIME_UNITS,
             'to': CONVERT_TO_SECONDS,
             'from': CONVERT_FROM_SECONDS
         }, target=target, original=original)
+    
+    def standardized(self):
+
+        """
+        Converts the Quantity to standard SI units (meters, seconds, kilograms, etc.).
+
+        Returns a new Quantity with converted measurements.
+        """
+
+        return self.converted_auto(['kg', 'm', 's'])
 
 class Temperature:
 
@@ -355,4 +405,3 @@ class Temperature:
 
         # update type
         self.type == target
-
