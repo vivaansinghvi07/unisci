@@ -111,13 +111,18 @@ class Quantity:
 
         # fills exponent string
         exp_string = "10"
+        exp_number_string = ""
         for digit in exp:
             if digit == "+":
                 continue
             elif digit == "-":
                 exp_string += Quantity._NEG_EXP
             else:
-                exp_string += Quantity._EXP_CHARS[int(digit)]
+                exp_number_string += Quantity._EXP_CHARS[int(digit)]
+        
+        # remove leading zeroes
+        exp_number_string = exp_number_string.lstrip(Quantity._EXP_CHARS[0])
+        exp_string += exp_number_string
 
         # returns formatted number
         return f"{number}*{exp_string}"
