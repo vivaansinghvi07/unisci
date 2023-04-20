@@ -219,7 +219,7 @@ class Quantity:
         Removes all units that are to the power of 0.
         """
 
-        for key in self.unit_type.keys():
+        for key in list(self.unit_type.keys()):
             if self.unit_type[key] == 0:
                 del self.unit_type[key]
 
