@@ -68,7 +68,9 @@ class Quantity:
         neg_units = "-".join([Quantity.__format_unit(unit, power) for unit, power in neg.items()])
 
         # creates and returns string for units
-        if len(pos_units) == 0:
+        if len(self.unit_type) == 0:
+            units = ""
+        elif len(pos_units) == 0:
             units = f"1/{neg_units}"
         elif len(neg_units) == 0:
             units = f"{pos_units}"
@@ -92,6 +94,7 @@ class Quantity:
         return Quantity(self.number, self.unit_type.copy())
     
     def __add__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+
         """
         Arguments: a Quantity, Temperature, or number which you want to add to the Quantity.
 
@@ -99,8 +102,11 @@ class Quantity:
 
         Returns: a new Quantity with the addition operation performed on it
         """
+
+        # TODO:
     
     def __mul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+
         """
         Arguments: A Quantity, Temperature, or number to which you want to multiply the quantity
 
@@ -311,11 +317,13 @@ class Quantity:
 
         for conversion in target_units:
             if conversion in LENGTH_UNITS:
-                output = output.converted_length(conversion)
+                output = output.converted_length(target=conversion)
             elif conversion in MASS_UNITS:
-                output = output.converted_mass(conversion)
+                output = output.converted_mass(target=conversion)
             elif conversion in TIME_UNITS:
-                output = output.converted_time(conversion)
+                output = output.converted_time(target=conversion)
+            elif conversion in TEMPERATURE_UNITS:
+                output = output.converted_temperature(target=conversion)
 
         return output
 
@@ -417,6 +425,22 @@ class Quantity:
             'from': CONVERT_FROM_LITERS
         }, target=target, original=original)
     
+    def converted_temperature(self, target: str, original: str = None) -> Quantity:
+        
+        """
+        Arguments: an original unit and a target unit. If original is not entered, it is automatically interpreted.
+
+        Raises: a UnitError if the unit entered is not supported.
+
+        Returns: a new Quantity object, with the original unit converted to the target unit. 
+        """
+
+        return self.__converted(factors = {
+            'supported': TEMPERATURE_UNITS,
+            'to': CONVERT_TO_CELSIUS,
+            'from': CONVERT_FROM_CELSIUS
+        }, target=target, original=original)
+    
     def standardized(self):
 
         """
@@ -425,9 +449,15 @@ class Quantity:
         Returns a new Quantity with converted measurements.
         """
 
-        return self.converted_auto(['kg', 'm', 's'])
+        return self.converted_auto(['kg', 'm', 's', 'K'])
 
 class Temperature:
+
+    """
+    This class is for relative, rather than absolute temperatures. 
+    While looking at absolute temperatures, an increase in 45 Fahrenheit corresponds to an increase in 25 Kelvin or 25 Celsius.
+    However, in relative temperatures, based around the boiling point of water, 0 Celsius is 273 Kelvin.
+    """
 
     DEG_SYMB = "°"
 
@@ -483,6 +513,14 @@ class Temperature:
         """
 
         return self * other
+    
+    def __pow__(self, power: int) -> Quantity:
+
+        """
+        Arguments: an integer 
+        """
+
+        # TODO:
         
     @property
     def celsius(self) -> Union[int, float]:
