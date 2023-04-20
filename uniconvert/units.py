@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Union
-from uniconvert.error import UnitError
+from uniconvert.error import UnitError, CompatabilityError
 from uniconvert.conversion_factors import *
 
 class Quantity:
@@ -90,6 +90,15 @@ class Quantity:
         """
 
         return Quantity(self.number, self.unit_type.copy())
+    
+    def __add__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+        """
+        Arguments: a Quantity, Temperature, or number which you want to add to the Quantity.
+
+        Raises: UnsupportedError, for classes not supported in adding. CompatabilityError, for Quantities not compatible for adding.
+
+        Returns: a new Quantity with the addition operation performed on it
+        """
     
     def __mul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
         """
@@ -443,7 +452,38 @@ class Temperature:
         """
         symbol = Temperature.DEG_SYMB if self.type != 'K' else ' '
         return f"{self.number}{symbol}{self.type}"
+    
+    def __mul__(self, other: Union[Temperature, int, float]) -> Union[Temperature, Quantity]:
 
+        """
+        Arguments: another Temperature or number to multiply the current temperature by
+
+        Raises: UnsupportedError for classes unsupported with multiplication
+
+        Returns: a Temperature object (if multiplied with a number) or a Quantity object (if multiplied with a Temperature)
+        """
+
+        # new temperature with multiplication done
+        if isinstance(other, (float, int)):
+            return Temperature(self.number * other, self.type)
+        
+        # new quantity with temperature squared
+        elif isinstance(other, Temperature):
+            if self.type == 'K':
+                return Quantity(self.kelvin * other.kelvin, {'K': 2})
+            elif self.type == 'C':
+                return Quantity(self.celsius * other.celsius, {'C': 2})
+            elif self.type == 'F':
+                return Quantity(self.fahrenheit * other.fahrenheit, {'F': 2})
+            
+    def __rmul__(self, other: Union[Temperature, int, float]) -> Union[Temperature, Quantity]:
+
+        """
+        Performs multiplcation as defined in __mul__()
+        """
+
+        return self * other
+        
     @property
     def celsius(self):
         """
