@@ -485,9 +485,9 @@ class Temperature:
         return self * other
         
     @property
-    def celsius(self):
+    def celsius(self) -> Union[int, float]:
         """
-        Returns the temperature in degrees Celsius
+        Returns the number part of the temperature in degrees Celsius
         """
         if self.type == 'C':
             return self.number
@@ -497,9 +497,9 @@ class Temperature:
             return self.number - 273
         
     @property
-    def fahrenheit(self):
+    def fahrenheit(self) -> Union[int, float]:
         """
-        Returns the temperature in degrees Fahrenheit
+        Returns the number part of the temperature in degrees Fahrenheit
         """
         if self.type == 'F':
             return self.number
@@ -509,9 +509,9 @@ class Temperature:
             return (self.number + 273) * (9 / 5) + 32
         
     @property
-    def kelvin(self):
+    def kelvin(self) -> Union[int, float]:
         """
-        Returns the temperature in Kelvin
+        Returns the number part of the temperature in Kelvin
         """ 
         if self.type == 'K':
             return self.number
@@ -520,11 +520,13 @@ class Temperature:
         elif self.type == 'F':
             return (self.number - 32) * (5 / 9) + 273
     
-    def convert(self, target: str):
+    def converted(self, target: str):
         """
         Arguments: A single character representing the unit of the target temperature (eg 'K' or 'F')
 
         Raises: UnitError for a wrong temperature unit
+
+        Returns: A new Temperature with the updated unit
         """
 
         # standardize to uppercase
@@ -536,11 +538,13 @@ class Temperature:
         
         # perform number conversion
         if target == 'K':
-            self.number = self.kelvin
+            number = self.kelvin
         elif target == 'C':
-            self.number = self.celsius
+            number = self.celsius
         elif target == 'F':
-            self.number = self.fahrenheit
+            number = self.fahrenheit
 
         # update type
-        self.type == target
+        type = target
+
+        return Temperature(number, type)
