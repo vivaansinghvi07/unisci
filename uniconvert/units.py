@@ -428,6 +428,8 @@ class Quantity:
     def converted_temperature(self, target: str, original: str = None) -> Quantity:
         
         """
+        Note: This is for absolute temperature conversions. For example, if you wanted to see what an increase in 10 K corresponded to in degrees F, or something of the sort.
+
         Arguments: an original unit and a target unit. If original is not entered, it is automatically interpreted.
 
         Raises: a UnitError if the unit entered is not supported.
