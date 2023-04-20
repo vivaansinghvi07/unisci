@@ -169,7 +169,7 @@ class Quantity:
             return Quantity(self.number / other.number, new_types)
 
         elif isinstance(other, Quantity):
-            
+
             # reverses dictionary
             new_types = {unit: - power for unit, power in other.unit_type.items()}
             new_num = 1 / other.number
@@ -189,11 +189,13 @@ class Quantity:
 
         # reverses self dictionary
         new_types = {unit: - power for unit, power in self.unit_type.items()}
-        new_num = 1 / self.number
-
-        # perform multiplication with inverted object
-        return Quantity(new_num, new_types) * self
-
+    
+        if isinstance(other, (int, float)):
+            return Quantity(other / self.number, new_types)
+        
+        elif isinstance(other, (Temperature, Quantity)):
+            new_number = 1 / self.number
+            return Quantity(new_number, new_types) * other
         
     def __pow__(self, power: int) -> Quantity:
 
