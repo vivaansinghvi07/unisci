@@ -104,7 +104,7 @@ class Quantity:
         new_types = self.unit_type.copy()
 
         # checks if its a number
-        if isinstance(other, int) or isinstance(other, float):
+        if isinstance(other, (int, float)):
             return Quantity(self.number * other, new_types)
         
         # checks if it is a temperature unit
@@ -122,11 +122,17 @@ class Quantity:
                     new_types[type] = power
                 else:
                     new_types[type] += power
-            return Quantity(self.number * other.number, new_types)
+            answer = Quantity(self.number * other.number, new_types)
         
         # other types unsupported
         else:
             raise TypeError("Invalid type for Quantity multiplication.")
+        
+        # converts all units if necessary
+        if Quantity.auto_format:
+            return answer.converted_auto(list(self.unit_type.keys()))
+        else:
+            return answer
         
     def __rmul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
         """
@@ -134,6 +140,60 @@ class Quantity:
         See documentation of __mul__() for more info about multiplication.
         """
         return self.__mul__(other)
+    
+    def __truediv__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+        """
+        Arguments: a Temperature, Quantity, or number to divide the Quantity by.
+
+        Raises: a UnitError for unsupported units
+
+        Returns: a new Quantity object with the division being done.
+        """
+
+        new_types = self.unit_type.copy()
+
+        if isinstance(other, (int, float)):
+
+            # divides number and returns
+            return Quantity(self.number / other, new_types)
+
+        elif isinstance(other, Temperature):
+
+            # adds the inverse of the temperature
+            if other.type in new_types:
+                new_types[other.type] = -1
+            else:
+                new_types[other.type] -= 1
+
+            # returns new Quantity with inverted temperature unit
+            return Quantity(self.number / other.number, new_types)
+
+        elif isinstance(other, Quantity):
+            
+            # reverses dictionary
+            new_types = {unit: - power for unit, power in other.unit_type.items()}
+            new_num = 1 / other.number
+
+            # performs multiplication with inverted object
+            return self * Quantity(new_num, new_types)
+    
+    def __rtruediv__(self, other: Union[int, float, Temperature, Quantity]):
+
+        """
+        Arguments: a Temperature, Quantity, or number to divide by the Quantity.
+
+        Raises: a UnitError for unsupported units
+
+        Returns: a new Quantity object with the division being done.
+        """
+
+        # reverses self dictionary
+        new_types = {unit: - power for unit, power in self.unit_type.items()}
+        new_num = 1 / self.number
+
+        # perform multiplication with inverted object
+        return Quantity(new_num, new_types) * self
+
         
     def __pow__(self, power: int) -> Quantity:
 
