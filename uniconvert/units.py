@@ -7,7 +7,7 @@ class Quantity:
 
     _EXP_CHARS = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
     _NEG_EXP = "⁻"
-    _SI_UNITS = ['m', 's', 'kg', 'K']
+    _SI_UNITS = ['m', 's', 'kg', 'L', 'K']
 
     precision = 3
     auto_format = True
