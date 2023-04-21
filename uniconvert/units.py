@@ -9,7 +9,8 @@ class Quantity:
 
     _EXP_CHARS = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
     _NEG_EXP = "⁻"
-    _SI_UNITS = ['m', 's', 'kg', 'L', 'K']
+    _PHYSICS_UNITS = ['m', 's', 'kg', 'L', 'K']
+    _CHEMISTRY_UNITS = ['m', 's', 'g', 'L', 'K']
 
     precision = 3
     auto_format = True
@@ -501,7 +502,7 @@ class Quantity:
             'from': CONVERT_FROM_CELSIUS
         }, target=target, original=original)
     
-    def standardized(self):
+    def standardized_physics(self) -> Quantity:
 
         """
         Converts the Quantity to standard SI units (meters, seconds, kilograms, etc.).
@@ -509,7 +510,17 @@ class Quantity:
         Returns a new Quantity with converted measurements.
         """
 
-        return self.converted_auto(Quantity._SI_UNITS)
+        return self.converted_auto(Quantity._PHYSICS_UNITS)
+
+    def standardized_chemistry(self) -> Quantity:
+
+        """
+        Converts the Quantity to standard units for chemistry (meters, seconds, grams, etc.).
+
+        Returns a new Quantity with converted measurements
+        """
+
+        return self.converted_auto(Quantity._CHEMISTRY_UNITS)
 
 class Temperature:
 
