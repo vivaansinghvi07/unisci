@@ -91,3 +91,4 @@ AUTO_SIMPLIFY = [
     [{'kg': 1, 'm': 2, 's': -3}, 'W'],
     [{'mol': 1, 'L': -1}, 'M']              # Molarity
 ]
+SPECIAL_UNITS = [unit for _, unit in AUTO_SIMPLIFY]
