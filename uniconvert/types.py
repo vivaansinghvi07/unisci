@@ -395,7 +395,14 @@ class Quantity:
                 except:
                     continue
 
-        return output
+        # simplifies unit if possible 
+        if Quantity.auto_format:
+            try:
+                return output.simplified()
+            except:
+                return output
+        else:
+            return output
 
     def __converted(self, factors: dict, target: str, original: str = None) -> Quantity:
 
@@ -538,7 +545,7 @@ class Quantity:
 
         return self.converted_auto(Quantity._CHEMISTRY_UNITS)
     
-    def auto_simplified(self) -> Quantity:
+    def simplified(self) -> Quantity:
         """
         Automatically turns simple units like kg-m/s^2, into complex ones like Newtons
         If Quantity.auto_format is False, this will not happen automatically.
@@ -546,7 +553,12 @@ class Quantity:
         for dict, unit in AUTO_SIMPLIFY: 
             if self.unit_type == dict:
                 return Quantity(self.number, {unit: 1})
-        return Quantity(self.number, self.unit_type)
+        raise UnitError("No unit found for simplification.")    # for if nothing was able to be simplified
+    
+    def force_simplified(self, target=str) -> Quantity:
+        """
+        Forces
+        """
 
 class Temperature:
 
