@@ -93,7 +93,7 @@ class Quantity:
 
         return Quantity(self.number, self.unit_type.copy())
     
-    def __add__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+    def __add__(self, other: Union[Quantity, int, float]) -> Quantity:
 
         """
         Arguments: a Quantity, Temperature, or number which you want to add to the Quantity.
@@ -108,20 +108,15 @@ class Quantity:
         if isinstance(other, (int, float)):
 
             # makes sure it is unitless
-            if not len(self.unit_type):
-                raise CompatabilityError("Quantity is incompatible for addition with unitless number.")
+            if not len(self.unit_type) == 0:
+                raise CompatabilityError("Quantity must be unitless for addition with number.")
             
             # just performs the addition
             return Quantity(self.number + other, {})
+
         elif isinstance(other, Temperature):
 
-            # makes sure the unit is a temperature unit
-            units = list(self.unit_type.keys())
-            if len(self.unit_type) != 1 or self.unit_type[units[0]] not in TEMPERATURE_UNITS:
-                raise CompatabilityError("Quantity is incompatible for addition with a Temperature.")
-            
-            # returns new temperature with other converted
-            return Quantity(self.number + other.converted(units[0], {units[0]: 1}))
+            raise CompatabilityError("A Quantity (absolute temperature) is incompatible for addition with a Temperature (relative temperature)")
         
         elif isinstance(other, Quantity):
 
