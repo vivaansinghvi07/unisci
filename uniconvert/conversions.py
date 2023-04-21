@@ -7,6 +7,7 @@ __all__ = [
     'convert_length',
     'convert_mass',
     'convert_time',
+    'convert_volume',
     'convert'
 ]
 
