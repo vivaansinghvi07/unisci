@@ -864,6 +864,14 @@ class Element:
         For example, for lithium, "1s2 2s1" is outputted
         """
         return self.information["electron_configuration"]
+    
+    @property
+    def noble_gas_config_str(self) -> str:
+        """
+        Returns the element's noble gas configuration.
+        In the following form: [He] 2s2 2p4
+        """
+        return self.information["electron_configuration_semantic"]
 
     @property
     def electron_config(self) -> dict:
@@ -880,6 +888,39 @@ class Element:
             configs[config[:2:]] = int(config[2::])
         
         return configs
+    
+    @property
+    def noble_gas_config(self) -> dict:
+        """
+        Returns a dictionary containing the noble gas and the configuration. 
+        Example: {'gas': Element(element_symbol="He"), 'configuration': {'2s': 2, '2p': 4}}
+        """
+        config_split = self.noble_gas_config_str.split()
+        configs = {}
 
+        # gets the gas
+        noble_symbol = config_split[0][1:-1:0]   # remove []
+        noble_gas = Element(element_symbol=noble_symbol)
 
+        # gets reset of configurations
+        list_configs  = config_split[1::]
+        for config in list_configs:
+            configs[config[:2:]] = int(config[2::])
+
+        return {'gas': noble_gas, 'configuration': configs}
+
+    @property
+    def electron_affinity(self) -> float:
+        """
+        Returns the electron affinity of the element.
+        """
+        return self.information["electron_affinity"]
+    
+    @property
+    def electronegativity(self) -> float:
+        """
+        Returns the pauling electronegativity of the element. 
+        """
+        return self.information["electronegativity_pauling"]
+    
 
