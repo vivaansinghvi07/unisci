@@ -57,6 +57,7 @@ CONVERT_TO_LITERS = {
     'nL': 1e-9,
     'mcL': 1e-6,
     'mL': 1e-3,
+    'cc': 1e-3,
     'L': 1,
     'kL': 1e3,
     'ML': 1e6,
