@@ -212,7 +212,7 @@ class Quantity:
         Same as multiplication, but in reverse. 
         See documentation of __mul__() for more info about multiplication.
         """
-        return self.__mul__(other)
+        return self * other
     
     def __truediv__(self, other: Union[Quantity, int, float]) -> Quantity:
         """
