@@ -140,10 +140,10 @@ class Quantity:
         else:
             raise TypeError("Type is not supported for addition with Quantity.")
     
-    def __mul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+    def __mul__(self, other: Union[Quantity, int, float]) -> Quantity:
 
         """
-        Arguments: A Quantity, Temperature, or number to which you want to multiply the quantity
+        Arguments: A Quantity or number to which you want to multiply the quantity
 
         Raises: UnsupportedError, for a class that is not supported in multiplication
 
@@ -159,12 +159,9 @@ class Quantity:
         
         # checks if it is a temperature unit
         elif isinstance(other, Temperature):
-            if other.type in new_types:
-                new_types[other.type] += 1
-            else:
-                new_types[other.type] = 1
-            return Quantity(self.number * other.number, new_types)
-        
+            
+            raise CompatabilityError("A Quantity (absolute temperature) is incompatible for addition with a Temperature (relative temperature)")
+
         # checks if it is a Quantity - account for every unit type in new Quantity
         elif isinstance(other, Quantity):
             for type, power in other.unit_type.items():
@@ -184,16 +181,16 @@ class Quantity:
         else:
             return answer
         
-    def __rmul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+    def __rmul__(self, other: Union[Quantity, int, float]) -> Quantity:
         """
         Same as multiplication, but in reverse. 
         See documentation of __mul__() for more info about multiplication.
         """
         return self.__mul__(other)
     
-    def __truediv__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
+    def __truediv__(self, other: Union[Quantity, int, float]) -> Quantity:
         """
-        Arguments: a Temperature, Quantity, or number to divide the Quantity by.
+        Arguments: a Quantity, or number to divide the Quantity by.
 
         Raises: a UnitError for unsupported units
 
@@ -209,14 +206,7 @@ class Quantity:
 
         elif isinstance(other, Temperature):
 
-            # adds the inverse of the temperature
-            if other.type in new_types:
-                new_types[other.type] = -1
-            else:
-                new_types[other.type] -= 1
-
-            # returns new Quantity with inverted temperature unit
-            return Quantity(self.number / other.number, new_types)
+            raise CompatabilityError("A Quantity (absolute temperature) is incompatible for addition with a Temperature (relative temperature)")
 
         elif isinstance(other, Quantity):
 
@@ -227,10 +217,10 @@ class Quantity:
             # performs multiplication with inverted object
             return self * Quantity(new_num, new_types)
     
-    def __rtruediv__(self, other: Union[int, float, Temperature, Quantity]):
+    def __rtruediv__(self, other: Union[int, float, Quantity]) -> Quantity:
 
         """
-        Arguments: a Temperature, Quantity, or number to divide by the Quantity.
+        Arguments: a Quantity, or number to divide by the Quantity.
 
         Raises: a UnitError for unsupported units
 
@@ -513,7 +503,7 @@ class Temperature:
         self.type = type.upper()
         self.number = number
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns the temperature in the form <number> <symbol>. For example, '100 K' or '50°F'
         """
@@ -528,30 +518,23 @@ class Temperature:
 
         return Temperature(self.number, self.type)
     
-    def __mul__(self, other: Union[Temperature, int, float]) -> Union[Temperature, Quantity]:
+    def __mul__(self, other: Union[int, float]) -> Temperature:
 
         """
-        Arguments: another Temperature or number to multiply the current temperature by
+        Arguments: a number to multiply the current temperature by
 
         Raises: UnsupportedError for classes unsupported with multiplication
 
-        Returns: a Temperature object (if multiplied with a number) or a Quantity object (if multiplied with a Temperature)
+        Returns: a Temperature object, if multiplied with a number
         """
 
         # new temperature with multiplication done
         if isinstance(other, (float, int)):
             return Temperature(self.number * other, self.type)
-        
-        # new quantity with temperature squared
-        elif isinstance(other, Temperature):
-            if self.type == 'K':
-                return Quantity(self.kelvin * other.kelvin, {'K': 2})
-            elif self.type == 'C':
-                return Quantity(self.celsius * other.celsius, {'C': 2})
-            elif self.type == 'F':
-                return Quantity(self.fahrenheit * other.fahrenheit, {'F': 2})
+        else:
+            raise UnsupportedError("Unsupported type for multiplication with Temperature.")
             
-    def __rmul__(self, other: Union[Temperature, int, float]) -> Union[Temperature, Quantity]:
+    def __rmul__(self, other: Union[int, float]) -> Temperature:
 
         """
         Performs multiplcation as defined in __mul__()
@@ -559,19 +542,13 @@ class Temperature:
 
         return self * other
     
-    def __pow__(self, power: int) -> Quantity:
+    def __pow__(self, power: int) -> UnsupportedError:
 
         """
-        Repeated multiplication to raise the temperature to a power.
+        Raises error: Unsupported
         """
 
-        output = self.__copy__()
-
-        # performs repeated multiplication
-        for _ in range(1, power):
-            output = output * self
-
-        return output
+        raise UnsupportedError("Cannot raise relative Temperatures to a power. Try using a Quantity object instead.")
         
     @property
     def celsius(self) -> Union[int, float]:
