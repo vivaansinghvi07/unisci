@@ -733,7 +733,6 @@ class Element:
     Uses data from @Bowserinator to obtain data about chemical elements.
     """
 
-
     # loads symbols and numbers
     with open(f"{Path(__file__).parent}/periodic/periodic-table-symbols.json", "r") as f:
         _SYMBOL_TO_NAME = json.load(f)
@@ -766,4 +765,121 @@ class Element:
                     self.information = table[Element._SYMBOL_TO_NAME[element_symbol]]
             except:
                 raise ArgumentError("Invalid information given. Check your spelling.")
-            
+
+    """
+    Below are several properties of the element, returned via information lookup.
+    """     
+
+    @property
+    def name(self) -> str:
+        """
+        Returns the name of the element, capitalized.
+        """
+        return self.information["name"]
+    
+    @property
+    def symbol(self) -> str:
+        """
+        Returns the element symbol.
+        """
+        return self.information["symbol"]
+    
+    @property 
+    def desc(self) -> str:
+        """
+        Returns a short description of the element.
+        """
+        return self.information["summary"]
+    
+    @property
+    def discoverer(self) -> str:
+        """
+        Returns the name of the person who discovered the element.
+        """
+        return self.information["discovered_by"]
+    
+    @property
+    def mass(self) -> Quantity:
+        """
+        Returns the atomic mass of the element as a Quantity object
+        """
+        return Quantity(self.information["atomic_mass"], {"g": 1, "mol": -1})
+    
+    @property
+    def state(self) -> str:
+        """
+        Returns the state of the element at room temperature.
+        """
+        return self.information["state"]
+    
+    @property 
+    def density(self) -> Quantity:
+        """
+        Returns the density of the element at room temperature. in g/L if gas, otherwise in g/mL
+        """
+        if self.state == "Gas":
+            return Quantity(self.information["density"], {"g": 1, "L": -1})
+        else:
+            return Quantity(self.information["density"], {"g": 1, "mL": -1})
+        
+    @property
+    def boiling_point(self) -> Quantity:
+        """
+        Returns the boiling point in Kelvin.
+        """
+        return Quantity(self.information["boil"], {'K': 1})
+    
+    @property
+    def melting_point(self) -> Quantity:
+        """
+        Returns the melting point in Kelvin.
+        """
+        return Quantity(self.information["melt"], {'K': 1})
+    
+    @property 
+    def period(self) -> int:
+        """
+        Returns the period of the element.
+        """
+        return self.information["period"]
+    
+    @property 
+    def group(self) -> int:
+        """
+        Returns the group (column) of the element.
+        """
+        return self.information["group"]
+    
+    @property
+    def number(self) -> int:
+        """
+        Returns the atomic number of the element.
+        """
+        return self.information["number"]
+    
+    @property
+    def electron_config_str(self) -> str:
+        """
+        Returns the element's electron configuration as a string. 
+        For example, for lithium, "1s2 2s1" is outputted
+        """
+        return self.information["electron_configuration"]
+
+    @property
+    def electron_config(self) -> dict:
+        """
+        Returns a dictionary of electron orbitals and electrons within those orbitals.
+        Example: {"1s": 2, "2s": 1}
+        Use element.electron_config_str to get a string format, like "1s2 2s1"
+        """
+        list_configs = self.electron_config_str.split()
+        configs = {}
+
+        # converts "1s2" to "1s": 2
+        for config in list_configs:
+            configs[config[:2:]] = int(config[2::])
+        
+        return configs
+
+
+
