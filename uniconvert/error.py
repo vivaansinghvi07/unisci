@@ -6,3 +6,7 @@ class UnitError(Exception):
 class CompatabilityError(Exception):
     def __init__(self, message):
         self.message = message
+    
+class UnsupportedError(Exception):
+    def __init__(self, message):
+        self.message = message
