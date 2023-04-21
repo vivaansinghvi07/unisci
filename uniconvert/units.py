@@ -1,6 +1,8 @@
 from __future__ import annotations
+import json
+from pathlib import Path
 from typing import Union
-from uniconvert.error import UnitError, CompatabilityError, UnsupportedError
+from uniconvert.error import *
 from uniconvert.conversion_factors import *
 
 _CONVERT_FUNCS = []
@@ -724,3 +726,44 @@ class Temperature:
         type = target
 
         return Temperature(number, type)
+    
+class Element:
+
+    """
+    Uses data from @Bowserinator to obtain data about chemical elements.
+    """
+
+
+    # loads symbols and numbers
+    with open(f"{Path(__file__).parent}/periodic/periodic-table-symbols.json", "r") as f:
+        _SYMBOL_TO_NAME = json.load(f)
+    with open(f"{Path(__file__).parent}/periodic/periodic-table-numbers.json") as f:
+        _NUMBER_TO_NAME = json.load(f)
+
+    def __init__(self, element_symbol: str = None, element_name: str = None, element_number: int = None) -> Element:
+
+        """
+        Arguments: EITHER a symbol OR a name for the element. 
+
+        Raises: ArgumentError for when both or neither the symbol and name are given.
+        NameError for incorrect symbol or name.
+
+        Returns: a new Element
+        """
+
+        if [element_symbol, element_name, element_number].count(None) != 2:
+            raise ArgumentError("You must enter only one of the folloing: a name, symbol, or number.")
+
+        # obtain json data for the element
+        with open(f"{Path(__file__).parent}/periodic/periodic-table-lookup.json", "r") as f:
+            table = json.load(f)
+            try:
+                if element_name:
+                    self.information = table[element_name.lower()]  # format name to lowercase: "Hydrogen" -> "hydrogen"
+                elif element_number: 
+                    self.information = table[Element._NUMBER_TO_NAME[str(element_number)]]
+                elif element_symbol:
+                    self.information = table[Element._SYMBOL_TO_NAME[element_symbol]]
+            except:
+                raise ArgumentError("Invalid information given. Check your spelling.")
+            
