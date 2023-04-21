@@ -7,6 +7,7 @@ class Quantity:
 
     _EXP_CHARS = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
     _NEG_EXP = "⁻"
+    _SI_UNITS = ['m', 's', 'kg', 'K']
 
     precision = 3
     auto_format = True
@@ -476,7 +477,7 @@ class Quantity:
         Returns a new Quantity with converted measurements.
         """
 
-        return self.converted_auto(['kg', 'm', 's', 'K'])
+        return self.converted_auto(Quantity._SI_UNITS)
 
 class Temperature:
 
@@ -497,7 +498,7 @@ class Temperature:
         Raises: UnitError if there is a wrong unit of measurement
         """
 
-        if type.upper() not in ['C', 'K', 'F']:
+        if type.upper() not in TEMPERATURE_UNITS:
             raise UnitError(f"Invalid unit of measurement for a temperature: '{type}'")
 
         self.type = type.upper()
@@ -599,7 +600,7 @@ class Temperature:
         target = target.upper()
 
         # check for invalid
-        if target not in ['F', 'C', 'K']:
+        if target not in TEMPERATURE_UNITS:
             raise UnitError(f"Target unit '{target}' is not a supported temperature.")
         
         # perform number conversion
