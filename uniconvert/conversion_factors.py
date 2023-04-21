@@ -74,8 +74,8 @@ VOLUME_UNITS = list(CONVERT_FROM_LITERS.keys())
 
 # for temperature converisons (absolute, not relative)
 CONVERT_TO_CELSIUS = {
-    'C': 1,
-    'F': 5 / 9,
+    'deg. C': 1,
+    'deg. F': 5 / 9,
     'K': 1,
 }
 CONVERT_FROM_CELSIUS = {key: 1 / value for key, value in CONVERT_TO_CELSIUS.items()}
