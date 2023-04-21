@@ -41,7 +41,7 @@ class Quantity:
         """
         Quantity.auto_format = do
 
-    def __init__(self, number: Union[int, float], unit_type: dict):
+    def __init__(self, number: Union[str, int, float], unit_type: dict):
         """
         Arguments: Enter the number of the measurement, and a dictionary in the form of {unit: power}. For example, 10 m/s becomes Quantity(10, {'m': 1, 's': -1}).
 
@@ -57,6 +57,20 @@ class Quantity:
         # assigns unit settings, each key is in lowercase
         self.unit_type = {key: value for key, value in unit_type.items()}
         self.__rm_zeroes()
+
+    @property
+    def value(self) -> float:
+        """
+        Returns the value stored by the Quantity. A Quantity of 12 m/s, upon calling this, returns 12.0.
+        """
+        return self.number
+
+    @property 
+    def units(self) -> dict:
+        """
+        Returns a copy of the units in the Quantity and their corresponding powers. For example, m/s² becomes {'m': 1, 's': -2}
+        """
+        return self.unit_type.copy()
         
     def __str__(self) -> str:
 
