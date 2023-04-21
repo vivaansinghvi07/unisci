@@ -572,6 +572,51 @@ class Temperature:
 
         return self * other
     
+    def __add__(self, other: Temperature) -> Temperature:
+
+        """
+        Arguments: Another temperature object to add to self.
+
+        Raises: TypeError for wrong types (anything other than Temperature).
+
+        Returns: A new Temperature object - the sum.
+        """
+
+        # detects for incorrect type
+        if not isinstance(other, Temperature):
+            raise TypeError("Only Temperature objects can be added to Temperatre objects.")
+
+        # converts other to the same type and then returns
+        return Temperature(self.number + other.converted(self.type).number, self.type)
+    
+    def __radd__(self, other: Temperature) -> Temperature:
+
+        """
+        Simply reversed addition. See __add__() for more information.
+        """
+
+        return other + self
+    
+    def __sub__(self, other: Temperature) -> Temperature:
+
+        """
+        Arguments: Another temperature object to subtract from self.
+
+        Raises: TypeError for wrong types (anything other than Temperature).
+
+        Returns: A new Temperature object - the difference.
+        """
+
+        return self + (-1 * other)
+    
+    def __rsub__(self, other: Temperature) -> Temperature:
+
+        """
+        Back-up method for subtracting. See __sub__() for more information.
+        """
+
+        return other + (-1 * self)
+    
     def __pow__(self, power: int) -> UnsupportedError:
 
         """
@@ -579,6 +624,14 @@ class Temperature:
         """
 
         raise UnsupportedError("Cannot raise relative Temperatures to a power. Try using a Quantity object instead.")
+    
+    def to_quantity(self) -> Quantity:
+
+        """
+        Returns the Temperature as a Quantity object.
+        """
+
+        return Quantity(self.number, {self.type: 1})
         
     @property
     def celsius(self) -> Union[int, float]:
