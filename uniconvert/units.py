@@ -26,6 +26,9 @@ class Quantity:
         A precision of '3' means 123456 would be printed as 1.234*10⁵.
         """
 
+        if not isinstance(decimal_places, int):
+            raise TypeError("Precision must be an integer.")
+
         Quantity.precision = decimal_places
 
     def set_auto_format(do: bool):
@@ -514,9 +517,22 @@ class Temperature:
     This class is for relative, rather than absolute temperatures. 
     While looking at absolute temperatures, an increase in 45 Fahrenheit corresponds to an increase in 25 Kelvin or 25 Celsius.
     However, in relative temperatures, based around the boiling point of water, 0 Celsius is 273 Kelvin.
+    Note: Temperature arithmetic (adding, subtracting) is supported, but uses absolute temperature changes rather than relative. 
+    For example, 2 deg. F - 0 deg. C returns 2 deg. F rather -30 deg. F
     """
 
     DEG_SYMB = "°"
+
+    precision = 2
+
+    def set_precision(new_precision: int):
+        """
+        Changes the number of decimal to round to.
+        """
+        if not isinstance(new_precision, int):
+            raise TypeError("Precision must be an integer.")
+        
+        Temperature.precision = new_precision
 
     def __init__(self, number: Union[int, float], type: str):
 
@@ -538,7 +554,7 @@ class Temperature:
         Returns the temperature in the form <number> <symbol>. For example, '100 K' or '50°F'.
         """
         symbol = self.type.replace('deg. ', Temperature.DEG_SYMB)
-        return f"{self.number} {symbol}"
+        return f"{round(self.number, Temperature.precision)} {symbol}"
     
     def __copy__(self) -> Temperature:
 
@@ -587,7 +603,7 @@ class Temperature:
             raise TypeError("Only Temperature objects can be added to Temperatre objects.")
 
         # converts other to the same type and then returns
-        return Temperature(self.number + other.converted(self.type).number, self.type)
+        return Temperature(self.number + CONVERT_TO_CELSIUS[other.type] * CONVERT_FROM_CELSIUS[self.type] * other.number, self.type)
     
     def __radd__(self, other: Temperature) -> Temperature:
 
