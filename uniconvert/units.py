@@ -3,6 +3,8 @@ from typing import Union
 from uniconvert.error import UnitError, CompatabilityError, UnsupportedError
 from uniconvert.conversion_factors import *
 
+_CONVERT_FUNCS = []
+
 class Quantity:
 
     _EXP_CHARS = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
@@ -11,6 +13,10 @@ class Quantity:
 
     precision = 3
     auto_format = True
+
+    def __register_conversion(func):
+        _CONVERT_FUNCS.append(func)
+        return func
 
     def set_precision(decimal_places: int):
 
@@ -332,7 +338,7 @@ class Quantity:
         """
 
         # start output with the unit
-        output = unit
+        output = unit.replace('deg. ', Temperature.DEG_SYMB)
 
         # check if its just one
         if power == 1:
@@ -347,10 +353,7 @@ class Quantity:
         for digit in str(power):
             output += Quantity._EXP_CHARS[int(digit)]
 
-        # adds degree symbol for temperature unit
-        if unit.upper() in ['F', 'C']:
-            output = Temperature.DEG_SYMB + output
-
+        # adds degree symbol for temperatures
         return output
     
     def converted_auto(self, target_units: list) -> Quantity:
@@ -366,14 +369,11 @@ class Quantity:
         output = self.__copy__()
 
         for conversion in target_units:
-            if conversion in LENGTH_UNITS:
-                output = output.converted_length(target=conversion)
-            elif conversion in MASS_UNITS:
-                output = output.converted_mass(target=conversion)
-            elif conversion in TIME_UNITS:
-                output = output.converted_time(target=conversion)
-            elif conversion in TEMPERATURE_UNITS:
-                output = output.converted_temperature(target=conversion)
+            for function in _CONVERT_FUNCS:
+                try:
+                    output = function(output, target=conversion)
+                except:
+                    continue
 
         return output
 
@@ -411,6 +411,7 @@ class Quantity:
         # returns a new unit with the conversion applied
         return Quantity(conversion_factor * self.number, new_units)
 
+    @__register_conversion
     def converted_length(self, target: str, original: str = None) -> Quantity:
 
         """
@@ -427,6 +428,7 @@ class Quantity:
             'from': CONVERT_FROM_METERS
         }, target=target, original=original)
     
+    @__register_conversion
     def converted_mass(self, target: str, original: str = None) -> Quantity:
         
         """
@@ -443,6 +445,7 @@ class Quantity:
             'from': CONVERT_FROM_KILOGRAMS
         }, target=target, original=original)
 
+    @__register_conversion
     def converted_time(self, target: str, original: str = None) -> Quantity:
         
         """
@@ -459,6 +462,7 @@ class Quantity:
             'from': CONVERT_FROM_SECONDS
         }, target=target, original=original)
     
+    @__register_conversion
     def converted_volume(self, target: str, original: str = None) -> Quantity:
         
         """
@@ -475,6 +479,7 @@ class Quantity:
             'from': CONVERT_FROM_LITERS
         }, target=target, original=original)
     
+    @__register_conversion
     def converted_temperature(self, target: str, original: str = None) -> Quantity:
         
         """
@@ -522,18 +527,18 @@ class Temperature:
         Raises: UnitError if there is a wrong unit of measurement.
         """
 
-        if type.upper() not in TEMPERATURE_UNITS:
+        if type not in TEMPERATURE_UNITS:
             raise UnitError(f"Invalid unit of measurement for a temperature: '{type}'")
 
-        self.type = type.upper()
+        self.type = type
         self.number = number
 
     def __str__(self) -> str:
         """
         Returns the temperature in the form <number> <symbol>. For example, '100 K' or '50°F'.
         """
-        symbol = Temperature.DEG_SYMB if self.type != 'K' else ' '
-        return f"{self.number}{symbol}{self.type}"
+        symbol = self.type.replace('deg. ', Temperature.DEG_SYMB)
+        return f"{self.number} {symbol}"
     
     def __copy__(self) -> Temperature:
 
@@ -580,9 +585,9 @@ class Temperature:
         """
         Returns the number part of the temperature in degrees Celsius.
         """
-        if self.type == 'C':
+        if self.type == 'deg. C':
             return self.number
-        elif self.type == 'F':
+        elif self.type == 'deg. F':
             return (self.number - 32) * 5 / 9
         elif self.type == 'K':
             return self.number - 273
@@ -592,9 +597,9 @@ class Temperature:
         """
         Returns the number part of the temperature in degrees Fahrenheit.
         """
-        if self.type == 'F':
+        if self.type == 'deg. F':
             return self.number
-        elif self.type == 'C':
+        elif self.type == 'deg. C':
             return self.number * (9 / 5) + 32
         elif self.type == 'K':
             return (self.number + 273) * (9 / 5) + 32
@@ -606,9 +611,9 @@ class Temperature:
         """ 
         if self.type == 'K':
             return self.number
-        elif self.type == 'C':
+        elif self.type == 'deg. C':
             return self.number + 273
-        elif self.type == 'F':
+        elif self.type == 'deg. F':
             return (self.number - 32) * (5 / 9) + 273
     
     def converted(self, target: str):
@@ -620,9 +625,6 @@ class Temperature:
         Returns: A new Temperature with the updated unit.
         """
 
-        # standardize to uppercase
-        target = target.upper()
-
         # check for invalid
         if target not in TEMPERATURE_UNITS:
             raise UnitError(f"Target unit '{target}' is not a supported temperature.")
@@ -630,9 +632,9 @@ class Temperature:
         # perform number conversion
         if target == 'K':
             number = self.kelvin
-        elif target == 'C':
+        elif target == 'deg. C':
             number = self.celsius
-        elif target == 'F':
+        elif target == 'deg. F':
             number = self.fahrenheit
 
         # update type
