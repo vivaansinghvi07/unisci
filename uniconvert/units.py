@@ -140,6 +140,31 @@ class Quantity:
         
         else:
             raise UnsupportedError("Type is not supported for addition with Quantity.")
+        
+    def __radd__(self, other: Union[int, float, Quantity]) -> Quantity:
+
+        """
+        Performs addition when the Quantity is on the right.
+        """
+
+        # performs normal addition
+        return self + other
+    
+    def __sub__(self, other: Union[int, float, Quantity]) -> Quantity:
+
+        """
+        Performs subtraction in the form negative addition. See __add__() method for more details.
+        """
+
+        return self + (-1 * other)
+    
+    def __rsub__(self, other: Union[int, float, Quantity]) -> Quantity:
+
+        """
+        Subtracts the Quantity from another number or Quantity. See __add__() method for more details.
+        """
+
+        return (self * -1) + other
     
     def __mul__(self, other: Union[Quantity, int, float]) -> Quantity:
 
@@ -223,7 +248,7 @@ class Quantity:
         """
         Arguments: a Quantity, or number to divide by the Quantity.
 
-        Raises: a UnitError for unsupported units
+        Raises: a CompatabilityError for unsupported units
 
         Returns: a new Quantity object with the division being done.
         """
