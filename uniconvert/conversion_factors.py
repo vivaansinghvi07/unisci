@@ -80,3 +80,12 @@ CONVERT_TO_CELSIUS = {
 }
 CONVERT_FROM_CELSIUS = {key: 1 / value for key, value in CONVERT_TO_CELSIUS.items()}
 TEMPERATURE_UNITS = list(CONVERT_FROM_CELSIUS.keys())
+
+AUTO_SIMPLIFY = [
+    [{'kg': 1, 'm': 1, 's': -2}, 'N'],    # Newtons
+    [{'N': 1, 'm': 1}, 'J'],              # Joules
+    [{'kg': 1, 'm': 2, 's': -2}, 'J'],   
+    [{'J': 1, 's': -1}, 'W'],             # Watts
+    [{'N': 1, 'm': 1, 's': -1}, 'W'], 
+    [{'kg': 1, 'm': 2, 's': -3}, 'W']
+]

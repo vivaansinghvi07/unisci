@@ -537,6 +537,16 @@ class Quantity:
         """
 
         return self.converted_auto(Quantity._CHEMISTRY_UNITS)
+    
+    def auto_simplified(self) -> Quantity:
+        """
+        Automatically turns simple units like kg-m/s^2, into complex ones like Newtons
+        If Quantity.auto_format is False, this will not happen automatically.
+        """
+        for dict, unit in AUTO_SIMPLIFY: 
+            if self.unit_type == dict:
+                return Quantity(self.number, {unit: 1})
+        return Quantity(self.number, self.unit_type)
 
 class Temperature:
 
