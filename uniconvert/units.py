@@ -17,22 +17,21 @@ class Quantity:
         """
         Sets the precision of quantity printing. 
         
-        A precision of '3' means 123456 would be printed as 1.234*10⁵
+        A precision of '3' means 123456 would be printed as 1.234*10⁵.
         """
 
         Quantity.precision = decimal_places
 
-    def auto_format(do: bool):
+    def set_auto_format(do: bool):
         """
         Sets instruction for values to auto-format, taking in a boolean for if it should or not.
-        For example, if a Quantity has units 'in' and 'm', auto format automatically converts it to either in² or m²
+        For example, if a Quantity has units 'in' and 'm', auto format automatically converts it to either in² or m².
         """
-
         Quantity.auto_format = do
 
     def __init__(self, number: Union[int, float], unit_type: dict):
         """
-        Arguments: Enter the number of the measurement, and a dictionary in the form of {unit: power}. For example, 10 m/s becomes Quantity(10, {'m': 1, 's': -1})
+        Arguments: Enter the number of the measurement, and a dictionary in the form of {unit: power}. For example, 10 m/s becomes Quantity(10, {'m': 1, 's': -1}).
 
         Creates a new Quantity object using a number and its corresponding unit.
         """
@@ -50,7 +49,7 @@ class Quantity:
     def __str__(self) -> str:
 
         """
-        Returns the unit as if it was written. Ex: '100.0 m' or '120 ft/s'
+        Returns the unit as if it was written. Ex: '100.0 m' or '120 ft/s'.
         """
 
         # formats and returns string
@@ -89,7 +88,7 @@ class Quantity:
     def __copy__(self) -> Quantity:
         
         """
-        Returns: a new copy of the Quantity without changing the dictionary
+        Returns: a new copy of the Quantity without changing the dictionary.
         """
 
         return Quantity(self.number, self.unit_type.copy())
@@ -101,7 +100,7 @@ class Quantity:
 
         Raises: UnsupportedError, for classes not supported in adding. CompatabilityError, for Quantities not compatible for adding.
 
-        Returns: a new Quantity with the addition operation performed on it
+        Returns: a new Quantity with the addition operation performed on it.
         """
 
         self.__rm_zeroes()
@@ -169,11 +168,11 @@ class Quantity:
     def __mul__(self, other: Union[Quantity, int, float]) -> Quantity:
 
         """
-        Arguments: A Quantity or number to which you want to multiply the quantity
+        Arguments: A Quantity or number to which you want to multiply the quantity.
 
-        Raises: UnsupportedError, for a class that is not supported in multiplication
+        Raises: UnsupportedError, for a class that is not supported in multiplication.
 
-        Returns: A new Quantity with multiplied units and numbers
+        Returns: A new Quantity with multiplied units and numbers.
         """
 
         # copies unit types for returning
@@ -218,7 +217,7 @@ class Quantity:
         """
         Arguments: a Quantity, or number to divide the Quantity by.
 
-        Raises: a UnitError for unsupported units
+        Raises: a UnitError for unsupported units.
 
         Returns: a new Quantity object with the division being done.
         """
@@ -248,7 +247,7 @@ class Quantity:
         """
         Arguments: a Quantity, or number to divide by the Quantity.
 
-        Raises: a CompatabilityError for unsupported units
+        Raises: a CompatabilityError for unsupported units.
 
         Returns: a new Quantity object with the division being done.
         """
@@ -294,7 +293,7 @@ class Quantity:
         """
         Formats the number of a Quantity for printing.
         
-        For example, 123456 with a precision of 2 becomes 1.23*10⁵
+        For example, 123456 with a precision of 2 becomes 1.23*10⁵.
         """
 
         # formats number and gets exponent
@@ -327,9 +326,9 @@ class Quantity:
 
     def __format_unit(unit: str, power: int) -> str:
         """
-        Arguments: An integer power to raise the number to
+        Arguments: An integer power to raise the number to.
 
-        Returns: A string that contains the unit raised the power
+        Returns: A string that contains the unit raised the power.
         """
 
         # start output with the unit
@@ -385,7 +384,7 @@ class Quantity:
         where units are the supported units for the conversion. Also takes in the target unit and original unit. 
         If original is not entered, it is automatically interpreted.
         
-        Returns: a new Quantity with the conversion being done on it
+        Returns: a new Quantity with the conversion being done on it.
         """
 
         # loads dictionaries
@@ -517,10 +516,10 @@ class Temperature:
     def __init__(self, number: Union[int, float], type: str):
 
         """
-        Arguments: Number (number for the temperature), type of the temperature (enter 'C', 'K', or 'F')
+        Arguments: Number (number for the temperature), type of the temperature (enter 'C', 'K', or 'F').
         Quantity objects can have temperature units, but they cannot be converted. Temperature objects can be.
 
-        Raises: UnitError if there is a wrong unit of measurement
+        Raises: UnitError if there is a wrong unit of measurement.
         """
 
         if type.upper() not in TEMPERATURE_UNITS:
@@ -531,7 +530,7 @@ class Temperature:
 
     def __str__(self) -> str:
         """
-        Returns the temperature in the form <number> <symbol>. For example, '100 K' or '50°F'
+        Returns the temperature in the form <number> <symbol>. For example, '100 K' or '50°F'.
         """
         symbol = Temperature.DEG_SYMB if self.type != 'K' else ' '
         return f"{self.number}{symbol}{self.type}"
@@ -539,7 +538,7 @@ class Temperature:
     def __copy__(self) -> Temperature:
 
         """
-        Returns a copy of the Temperature
+        Returns a copy of the Temperature.
         """
 
         return Temperature(self.number, self.type)
@@ -547,11 +546,11 @@ class Temperature:
     def __mul__(self, other: Union[int, float]) -> Temperature:
 
         """
-        Arguments: a number to multiply the current temperature by
+        Arguments: a number to multiply the current temperature by.
 
-        Raises: UnsupportedError for classes unsupported with multiplication
+        Raises: UnsupportedError for classes unsupported with multiplication.
 
-        Returns: a Temperature object, if multiplied with a number
+        Returns: a Temperature object, if multiplied with a number.
         """
 
         # new temperature with multiplication done
@@ -563,7 +562,7 @@ class Temperature:
     def __rmul__(self, other: Union[int, float]) -> Temperature:
 
         """
-        Performs multiplcation as defined in __mul__()
+        Performs multiplcation as defined in __mul__().
         """
 
         return self * other
@@ -571,7 +570,7 @@ class Temperature:
     def __pow__(self, power: int) -> UnsupportedError:
 
         """
-        Raises error: Unsupported
+        Raises UnsupportedError, because Temperature do not support being multiplied by other units.
         """
 
         raise UnsupportedError("Cannot raise relative Temperatures to a power. Try using a Quantity object instead.")
@@ -579,7 +578,7 @@ class Temperature:
     @property
     def celsius(self) -> Union[int, float]:
         """
-        Returns the number part of the temperature in degrees Celsius
+        Returns the number part of the temperature in degrees Celsius.
         """
         if self.type == 'C':
             return self.number
@@ -591,7 +590,7 @@ class Temperature:
     @property
     def fahrenheit(self) -> Union[int, float]:
         """
-        Returns the number part of the temperature in degrees Fahrenheit
+        Returns the number part of the temperature in degrees Fahrenheit.
         """
         if self.type == 'F':
             return self.number
@@ -603,7 +602,7 @@ class Temperature:
     @property
     def kelvin(self) -> Union[int, float]:
         """
-        Returns the number part of the temperature in Kelvin
+        Returns the number part of the temperature in Kelvin.
         """ 
         if self.type == 'K':
             return self.number
@@ -614,11 +613,11 @@ class Temperature:
     
     def converted(self, target: str):
         """
-        Arguments: A single character representing the unit of the target temperature (eg 'K' or 'F')
+        Arguments: A single character representing the unit of the target temperature (eg 'K' or 'F').
 
-        Raises: UnitError for a wrong temperature unit
+        Raises: UnitError for a wrong temperature unit.
 
-        Returns: A new Temperature with the updated unit
+        Returns: A new Temperature with the updated unit.
         """
 
         # standardize to uppercase
