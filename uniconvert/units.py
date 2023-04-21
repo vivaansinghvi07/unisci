@@ -518,7 +518,7 @@ class Temperature:
     While looking at absolute temperatures, an increase in 45 Fahrenheit corresponds to an increase in 25 Kelvin or 25 Celsius.
     However, in relative temperatures, based around the boiling point of water, 0 Celsius is 273 Kelvin.
     Note: Temperature arithmetic (adding, subtracting) is supported, but uses absolute temperature changes rather than relative. 
-    For example, 2 deg. F - 0 deg. C returns 2 deg. F rather -30 deg. F
+    For example, 2 deg. F - 0 deg. C returns 2 deg. F rather -30 deg. F.
     """
 
     DEG_SYMB = "°"
@@ -537,8 +537,11 @@ class Temperature:
     def __init__(self, number: Union[int, float], type: str):
 
         """
+        Note: For a description of the class itself, type just the class out and hover over it.
+
         Arguments: Number (number for the temperature), type of the temperature (enter 'C', 'K', or 'F').
-        Quantity objects can have temperature units, but they cannot be converted. Temperature objects can be.
+        Quantity objects can have temperature units, but they are only converted using absolute temperatures. 
+        Temperature objects are converted using relative temperatures.
 
         Raises: UnitError if there is a wrong unit of measurement.
         """
