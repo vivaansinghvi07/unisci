@@ -139,7 +139,7 @@ class Quantity:
             return Quantity(self.number + other.numbers, self.unit_type.copy())
         
         else:
-            raise TypeError("Type is not supported for addition with Quantity.")
+            raise UnsupportedError("Type is not supported for addition with Quantity.")
     
     def __mul__(self, other: Union[Quantity, int, float]) -> Quantity:
 
@@ -174,7 +174,7 @@ class Quantity:
         
         # other types unsupported
         else:
-            raise TypeError("Invalid type for Quantity multiplication.")
+            raise UnsupportedError("Invalid type for Quantity multiplication.")
         
         # converts all units if necessary
         if Quantity.auto_format:
