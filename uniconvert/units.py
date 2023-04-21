@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Union
-from uniconvert.error import UnitError, CompatabilityError
+from uniconvert.error import UnitError, CompatabilityError, UnsupportedError
 from uniconvert.conversion_factors import *
 
 class Quantity:
@@ -103,7 +103,47 @@ class Quantity:
         Returns: a new Quantity with the addition operation performed on it
         """
 
-        # TODO:
+        self.__rm_zeroes()
+
+        if isinstance(other, (int, float)):
+
+            # makes sure it is unitless
+            if not len(self.unit_type):
+                raise CompatabilityError("Quantity is incompatible for addition with unitless number.")
+            
+            # just performs the addition
+            return Quantity(self.number + other, {})
+        elif isinstance(other, Temperature):
+
+            # makes sure the unit is a temperature unit
+            units = list(self.unit_type.keys())
+            if len(self.unit_type) != 1 or self.unit_type[units[0]] not in TEMPERATURE_UNITS:
+                raise CompatabilityError("Quantity is incompatible for addition with a Temperature.")
+            
+            # returns new temperature with other converted
+            return Quantity(self.number + other.converted(units[0], {units[0]: 1}))
+        
+        elif isinstance(other, Quantity):
+
+            # automatically convert all the other's units to self's units
+            other = other.converted_auto(list(self.unit_type.keys()))
+
+            # check for incompatability
+            if len(self.unit_type) != len(other.unit_type):
+                raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
+            
+            # checks that all powers are the same
+            for key in self.unit_type.keys():
+                try:
+                    if other.unit_type[key] != self.unit_type[key]:
+                        raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
+                except:
+                    raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
+                
+            return Quantity(self.number + other.numbers, self.unit_type.copy())
+        
+        else:
+            raise TypeError("Type is not supported for addition with Quantity.")
     
     def __mul__(self, other: Union[Temperature, Quantity, int, float]) -> Quantity:
 
@@ -485,6 +525,14 @@ class Temperature:
         symbol = Temperature.DEG_SYMB if self.type != 'K' else ' '
         return f"{self.number}{symbol}{self.type}"
     
+    def __copy__(self) -> Temperature:
+
+        """
+        Returns a copy of the Temperature
+        """
+
+        return Temperature(self.number, self.type)
+    
     def __mul__(self, other: Union[Temperature, int, float]) -> Union[Temperature, Quantity]:
 
         """
@@ -519,10 +567,16 @@ class Temperature:
     def __pow__(self, power: int) -> Quantity:
 
         """
-        Arguments: an integer 
+        Repeated multiplication to raise the temperature to a power.
         """
 
-        # TODO:
+        output = self.__copy__()
+
+        # performs repeated multiplication
+        for _ in range(1, power):
+            output = output * self
+
+        return output
         
     @property
     def celsius(self) -> Union[int, float]:
