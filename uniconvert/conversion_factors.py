@@ -104,7 +104,7 @@ METRIC_CONVERSIONS = {
     'Z': 1e21,
     'Y': 1e24
 }
-METRIC_SI_UNITS = ['s', 'm', 'g', 'K', 'mol', 'J', 'W', 'N']     # the ones that are currently supported
+METRIC_UNITS = ['s', 'm', 'g', 'K', 'mol', 'J', 'W', 'N']     # the ones that are currently supported
 
 AUTO_SIMPLIFY = [
     [{'kg': 1, 'm': 1, 's': -2}, 'N'],      # Newtons
