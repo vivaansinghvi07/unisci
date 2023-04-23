@@ -404,10 +404,7 @@ class Quantity:
 
         # simplifies unit if possible 
         if Quantity.auto_format:
-            try:
-                return output.simplified()
-            except:
-                return output
+            return output.simplified()
         else:
             return output
 
@@ -421,23 +418,28 @@ class Quantity:
         Returns: a new Quantity with the conversion being done on it.
         """
 
+        # get metric bases
+        og_base = metric_base(original)
+        target_base = metric_base(target)
+
         # loads dictionaries
         supported = factors['supported']
         to_dict = factors['to']
         from_dict = factors['from']
 
         # checks for illegal values
-        if (target not in supported):
+        if target_base not in supported:
             raise UnitError("Target unit is not supported in this function.")
-        elif original != None and original not in supported:
+        elif original != None and og_base not in supported:
             raise UnitError("Original unit is not supported in this function.")
         
         # auto-determines and converts every source unit
         conversion_factor = 1
         new_units = {target: 0}
         for type in self.unit_type: 
-            if (original == None and type in supported) or (original != None and type == original):
-                conversion_factor *= (to_dict[type] * from_dict[target]) ** self.unit_type[type]
+            type_base = metric_base(type)
+            if (original == None and type_base in supported) or (original != None and type_base == og_base):
+                conversion_factor *= (to_dict[type_base] * metric_factor(type) * from_dict[target_base] / metric_factor(target)) ** self.unit_type[type]
                 new_units[target] += self.unit_type[type]
             else:
                 new_units[type] = self.unit_type[type]
@@ -475,8 +477,8 @@ class Quantity:
 
         return self.__converted(factors={
             'supported': MASS_UNITS,
-            'to': CONVERT_TO_KILOGRAMS,
-            'from': CONVERT_FROM_KILOGRAMS
+            'to': CONVERT_TO_GRAMS,
+            'from': CONVERT_FROM_GRAMS
         }, target=target, original=original)
 
     @__register_conversion
@@ -560,14 +562,14 @@ class Quantity:
         for dict, unit in AUTO_SIMPLIFY: 
             if self.unit_type == dict:
                 return Quantity(self.number, {unit: 1})
-        raise UnitError("No unit found for simplification.")    # for if nothing was able to be simplified
+        return Quantity(self.number, self.unit_type)    # for if nothing was able to be simplified
     
-    def force_simplified(self, target: str) -> Quantity:
+    def force_simplified(self, target: str, exp: int = 1) -> Quantity:
         """
         Forces a simplification to a specific unit, such as forcing kg-m/s to N-s (for momentum).
-        Units supported are here: ['N', 'J', 'M', 'W'].
+        Units supported are here viewable in AUTO_SIMPLIFY.
 
-        Arguments: A target unit to force convert to. Must be a special unit.
+        Arguments: A target unit to force convert to, and an integer which the unit is raised to. Must be a special unit.  
 
         Raises: UnsupportedError for unsupported units.
 
@@ -577,6 +579,32 @@ class Quantity:
         if target not in SPECIAL_UNITS:
             raise UnsupportedError(f"Target unit {target} is unsupported. The supported units for forced conversion are: {SPECIAL_UNITS}")
         
+        new_types = self.unit_type.copy()
+
+        # converts exponent
+        if exp < 0:
+            multiplier = 1
+            exp = abs(exp)
+        else:
+            multiplier = -1
+
+        # searches for unit - guaranteed to be in
+        for powers, special_unit in AUTO_SIMPLIFY:      # every special unit    
+            if special_unit == target:                  # first one to be found is most basic
+                for unit in powers:                     # gets the powers
+                    if unit in new_types:
+                        new_types[unit] += exp * powers[unit] * multiplier 
+                    else:
+                        new_types[unit] = exp * powers[unit] * multiplier
+                if special_unit in new_types:
+                    new_types[special_unit] += exp * -multiplier
+                else:
+                    new_types[special_unit] = exp * -multiplier
+                return Quantity(self.number, new_types)
+            
+        # almost never will be called; here in case
+        raise Exception("Error: Failed to convert.")
+
 
 class Temperature:
 
