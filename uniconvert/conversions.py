@@ -8,7 +8,10 @@ __all__ = [
     'convert_mass',
     'convert_time',
     'convert_volume',
-    'convert'
+    'convert',
+    'base_metric',
+    'metric_base',
+    'conversion_factor'
 ]
 
 def _check_illegal(target: str, original: str, units: dict):
@@ -117,6 +120,42 @@ def convert(number: Union[int, float], target: str, original: str) -> Union[int,
 
     # raises error if no function succeeded
     raise UnitError("Target or original units are incompatiple or unsupported.")
+
+def metric_base(unit: str) -> str:
+    """
+    Returns the base metric SI unit of the unit. If the unit is not metric, returns the unit itself.
+    """
+    for base in METRIC_UNITS:
+        # try-except block for if the tested base is longer than the unit
+        try:
+            test_base = unit[-len(base):]
+            if test_base == base:
+                if unit[:-len(base)] in METRIC_CONVERSIONS:
+                    return test_base
+                else:
+                    return unit     # options: 1) base is taken and incorrect, 2) base is already at base form
+            else:
+                continue    # checks another base
+        except: 
+            continue
+
+    # if no base matches (most likely option)
+    return unit
+    
+
+def metric_factor(unit: str) -> Union[int, float]:
+    """
+    Returns the number to multiply by the unit in order to get a base in the metric system. 
+    Returns 1 if the number is not metric.
+    """
+    # get base and check that it is different
+    base = metric_base(unit)
+    if base == unit:
+        return 1
+    
+    # otherwise return the conversion factor
+    else:
+        return METRIC_CONVERSIONS[unit[:-len(base)]]
 
 def conversion_factor(target: str, original: str) -> Union[int, float]:
 
