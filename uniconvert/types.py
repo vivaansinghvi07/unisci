@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Union
 from uniconvert.error import *
 from uniconvert.conversion_factors import *
+from uniconvert.conversions import metric_factor, metric_base
 
 __all__ = [
     "Quantity",
@@ -530,7 +531,7 @@ class Quantity:
             'to': CONVERT_TO_CELSIUS,
             'from': CONVERT_FROM_CELSIUS
         }, target=target, original=original)
-    
+
     def standardized_physics(self) -> Quantity:
 
         """
@@ -561,10 +562,21 @@ class Quantity:
                 return Quantity(self.number, {unit: 1})
         raise UnitError("No unit found for simplification.")    # for if nothing was able to be simplified
     
-    def force_simplified(self, target=str) -> Quantity:
+    def force_simplified(self, target: str) -> Quantity:
         """
-        Forces
+        Forces a simplification to a specific unit, such as forcing kg-m/s to N-s (for momentum).
+        Units supported are here: ['N', 'J', 'M', 'W'].
+
+        Arguments: A target unit to force convert to. Must be a special unit.
+
+        Raises: UnsupportedError for unsupported units.
+
+        Returns: a new converted Quantity.
         """
+
+        if target not in SPECIAL_UNITS:
+            raise UnsupportedError(f"Target unit {target} is unsupported. The supported units for forced conversion are: {SPECIAL_UNITS}")
+        
 
 class Temperature:
 
@@ -964,5 +976,3 @@ class Element:
         Returns the pauling electronegativity of the element. 
         """
         return self.information["electronegativity_pauling"]
-    
-
