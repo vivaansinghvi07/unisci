@@ -1022,6 +1022,6 @@ class Element:
             raise ArgumentError("Level must be an integer.")
         
         try:
-            return self.information["ionization_energies"][level - 1]
+            return Quantity(self.information["ionization_energies"][level - 1], {'kJ': 1, 'mol': -1})
         except:
             raise ArgumentError("Level out of bounds for ionization energy.")
