@@ -1008,3 +1008,20 @@ class Element:
         Returns the pauling electronegativity of the element. 
         """
         return self.information["electronegativity_pauling"]
+    
+    def get_ionization_energy(self, level: int = 1) -> Union[int, float]:
+        """
+        Arguments: the level, defaults to first level.
+
+        Raises: an ArgumentError for levels too large, or not integers
+
+        Returns: the level-th ionization energy of the element.
+        """
+        
+        if not isinstance(level, int):
+            raise ArgumentError("Level must be an integer.")
+        
+        try:
+            return self.information["ionization_energies"][level - 1]
+        except:
+            raise ArgumentError("Level out of bounds for ionization energy.")
