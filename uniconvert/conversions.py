@@ -1,5 +1,4 @@
 from uniconvert.error import UnitError
-from uniconvert.constants import *
 from uniconvert.conversion_factors import *
 from typing import Union
 
@@ -9,8 +8,8 @@ __all__ = [
     'convert_time',
     'convert_volume',
     'convert',
-    'base_metric',
     'metric_base',
+    'metric_factor',
     'conversion_factor'
 ]
 
@@ -25,7 +24,6 @@ def _check_illegal(target: str, original: str, units: dict):
         raise UnitError(f"Target unit '{target} 'is not supported in this function.")
     elif original not in units:
         raise UnitError(f"Original unit '{original} is not supported in this function.")    
-
 
 def convert_length(number: Union[int, float], target: str, original: str) -> Union[int, float]:
 
@@ -60,7 +58,7 @@ def convert_mass(number: Union[int, float], target: str, original: str) -> Union
     _check_illegal(target, original, MASS_UNITS)
 
     # calculate conversion factor and convert
-    conversion_factor = CONVERT_TO_KILOGRAMS[original] * CONVERT_FROM_KILOGRAMS[target]
+    conversion_factor = CONVERT_TO_GRAMS[original] * CONVERT_FROM_GRAMS[target]
     return number * conversion_factor
 
 def convert_time(number: Union[int, float], target: str, original: str) -> Union[int, float]:
