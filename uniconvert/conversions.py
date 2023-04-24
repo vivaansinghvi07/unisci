@@ -1,4 +1,4 @@
-from uniconvert.error import UnitError
+from uniconvert.error import *
 from uniconvert.conversion_factors import *
 from typing import Union
 
@@ -154,6 +154,24 @@ def metric_factor(unit: str) -> Union[int, float]:
     # otherwise return the conversion factor
     else:
         return METRIC_CONVERSIONS[unit[:-len(base)]]
+    
+def convert_metric(number: Union[int, float], original: str, target: str) -> Union[int, float]:
+    """
+    Arguments: a number, an original unit, and a target unit. The original and target units must have the same base metric.
+
+    Raises: UnsupportedError for if units not in the METRIC_UNITS constant. CompatabilityError for uncompatible units.
+
+    Returns: the new converted number.
+    """
+
+    # make sure base is the same
+    if metric_base(target) not in METRIC_UNITS or metric_base(original) not in METRIC_UNITS:
+        raise UnsupportedError("Units not supported for metric conversions.")
+    elif metric_base(target) != metric_base(original):
+        raise CompatabilityError("Metric base form must match for conversions.")
+    
+    # returns converted number if all good
+    return metric_factor(original) / metric_factor(target) * number
 
 def conversion_factor(target: str, original: str) -> Union[int, float]:
 
