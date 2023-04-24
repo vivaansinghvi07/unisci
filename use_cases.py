@@ -28,3 +28,11 @@ def find_force(m: Quantity, a: Quantity) -> Quantity:
     """
 
     return((m * a).standardized_physics())
+
+
+a = Quantity(1, {'mmol': 1, 'g': -1})
+print(a)
+b = a.converted_auto(['mol'])
+print(b)
+c = b.converted_mass('mg')
+print(c)
