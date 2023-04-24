@@ -844,7 +844,7 @@ class Element:
             table = json.load(f)
             try:
                 if element_name:
-                    self.information = table[element_name.lower()]  # format name to lowercase: "Hydrogen" -> "hydrogen"
+                    self.information = table[element_name.lower().replace('aluminum', 'aluminium')]  # format name to lowercase: "Hydrogen" -> "hydrogen"
                 elif element_number: 
                     self.information = table[Element._NUMBER_TO_NAME[str(element_number)]]
                 elif element_symbol:
