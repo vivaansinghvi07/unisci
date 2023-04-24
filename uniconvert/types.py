@@ -414,6 +414,7 @@ class Quantity:
         Arguments: a dictionary of conversion factors in this format: {'supported': LIST1, 'to': DICT1, 'from': DICT2}, 
         where units are the supported units for the conversion. Also takes in the target unit and original unit. 
         If original is not entered, it is automatically interpreted.
+        This function also automatically converts metric units, if asked for.
         
         Returns: a new Quantity with the conversion being done on it.
         """
@@ -439,7 +440,7 @@ class Quantity:
                 new_units[target] += self.unit_type[type]
 
             # other normal conversions - has to be supported
-            elif (original == None or (original != None and original == type)) and type_base in supported and target_base in supported:
+            elif (original == None or (original and original == type)) and type_base in supported and target_base in supported:
                 conversion_factor *= (to_dict[type_base] * metric_factor(type) * from_dict[target_base] / metric_factor(target)) ** self.unit_type[type]
                 new_units[target] += self.unit_type[type]
 
@@ -884,7 +885,7 @@ class Element:
         return self.information["discovered_by"]
     
     @property
-    def mass(self) -> Quantity:
+    def molar_mass(self) -> Quantity:
         """
         Returns the atomic mass of the element as a Quantity object
         """
