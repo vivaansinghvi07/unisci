@@ -426,7 +426,7 @@ class Quantity:
         supported = factors['supported']
         to_dict = factors['to']
         from_dict = factors['from']
-        
+
         # auto-determines and converts every source unit
         conversion_factor = 1
         new_units = {target: 0}
@@ -435,7 +435,7 @@ class Quantity:
             
             # checks for metric conversion - doesn't have to be supported 
             if (original == None or (original and og_base == type_base)) and type_base == target_base:
-                conversion_factor *= metric_factor(type) / metric_factor(target)
+                conversion_factor *= (metric_factor(type) / metric_factor(target)) ** self.unit_type[type]
                 new_units[target] += self.unit_type[type]
 
             # other normal conversions - has to be supported
