@@ -6,6 +6,8 @@ from uniconvert.error import *
 from uniconvert.conversion_factors import *
 from uniconvert.conversions import metric_factor, metric_base
 
+numeric = Union[int, float]
+
 __all__ = [
     "Quantity",
     "Temperature",
@@ -321,7 +323,7 @@ class Quantity:
             if self.unit_type[key] == 0:
                 del self.unit_type[key]
 
-    def __format_num(num: Union[int, float]) -> str:
+    def __format_num(num: numeric) -> str:
 
         """
         Formats the number of a Quantity for printing.
@@ -633,7 +635,7 @@ class Temperature:
         
         Temperature.precision = new_precision
 
-    def __init__(self, number: Union[int, float], type: str):
+    def __init__(self, number: numeric, type: str):
 
         """
         Note: For a description of the class itself, type just the class out and hover over it.
@@ -666,7 +668,7 @@ class Temperature:
 
         return Temperature(self.number, self.type)
     
-    def __mul__(self, other: Union[int, float]) -> Temperature:
+    def __mul__(self, other: numeric) -> Temperature:
 
         """
         Arguments: a number to multiply the current temperature by.
@@ -682,7 +684,7 @@ class Temperature:
         else:
             raise UnsupportedError("Unsupported type for multiplication with Temperature.")
             
-    def __rmul__(self, other: Union[int, float]) -> Temperature:
+    def __rmul__(self, other: numeric) -> Temperature:
 
         """
         Performs multiplcation as defined in __mul__().
@@ -752,7 +754,7 @@ class Temperature:
         return Quantity(self.number, {self.type: 1})
         
     @property
-    def celsius(self) -> Union[int, float]:
+    def celsius(self) -> numeric:
         """
         Returns the number part of the temperature in degrees Celsius.
         """
@@ -764,7 +766,7 @@ class Temperature:
             return self.number - 273
         
     @property
-    def fahrenheit(self) -> Union[int, float]:
+    def fahrenheit(self) -> numeric:
         """
         Returns the number part of the temperature in degrees Fahrenheit.
         """
@@ -776,7 +778,7 @@ class Temperature:
             return (self.number + 273) * (9 / 5) + 32
         
     @property
-    def kelvin(self) -> Union[int, float]:
+    def kelvin(self) -> numeric:
         """
         Returns the number part of the temperature in Kelvin.
         """ 
@@ -1009,7 +1011,7 @@ class Element:
         """
         return self.information["electronegativity_pauling"]
     
-    def get_ionization_energy(self, level: int = 1) -> Union[int, float]:
+    def get_ionization_energy(self, level: int = 1) -> Quantity:
         """
         Arguments: the level, defaults to first level.
 
