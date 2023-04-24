@@ -887,7 +887,7 @@ class Element:
     @property
     def molar_mass(self) -> Quantity:
         """
-        Returns the atomic mass of the element as a Quantity object
+        Returns the atomic mass of the element as a Quantity object in g / mol
         """
         return Quantity(self.information["atomic_mass"], {"g": 1, "mol": -1})
     
