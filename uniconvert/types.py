@@ -154,7 +154,7 @@ class Quantity:
         elif isinstance(other, Quantity):
 
             # automatically convert all the other's units to self's units
-            other = other.converted_auto(list(self.unit_type.keys()))
+            other = other.converted(list(self.unit_type.keys()))
 
             # check for incompatability
             if len(self.unit_type) != len(other.unit_type):
@@ -168,7 +168,7 @@ class Quantity:
                 except:
                     raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
                 
-            return Quantity(self.number + other.numbers, self.unit_type.copy())
+            return Quantity(self.number + other.number, self.unit_type.copy())
         
         else:
             raise UnsupportedError("Type is not supported for addition with Quantity.")
@@ -235,7 +235,7 @@ class Quantity:
         
         # converts all units if necessary
         if Quantity.auto_format:
-            return answer.converted_auto(list(self.unit_type.keys()))
+            return answer.converted(list(self.unit_type.keys()))
         else:
             return answer
         
@@ -383,7 +383,7 @@ class Quantity:
         # adds degree symbol for temperatures
         return output
     
-    def converted_auto(self, target_units: list) -> Quantity:
+    def converted(self, target_units: list) -> Quantity:
 
         """
         Arguments: A list of units to convert to. The program will try to convert the Quantity to each unit provided in this list.
@@ -408,7 +408,7 @@ class Quantity:
         else:
             return output
 
-    def __converted(self, factors: dict, target: str, original: str = None) -> Quantity:
+    def __converted_with_dicts(self, factors: dict, target: str, original: str = None) -> Quantity:
 
         """
         Arguments: a dictionary of conversion factors in this format: {'supported': LIST1, 'to': DICT1, 'from': DICT2}, 
@@ -461,7 +461,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted(factors={
+        return self.__converted_with_dicts(factors={
             'supported': LENGTH_UNITS,
             'to': CONVERT_TO_METERS,
             'from': CONVERT_FROM_METERS
@@ -478,7 +478,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted(factors={
+        return self.__converted_with_dicts(factors={
             'supported': MASS_UNITS,
             'to': CONVERT_TO_GRAMS,
             'from': CONVERT_FROM_GRAMS
@@ -495,7 +495,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted(factors={
+        return self.__converted_with_dicts(factors={
             'supported': TIME_UNITS,
             'to': CONVERT_TO_SECONDS,
             'from': CONVERT_FROM_SECONDS
@@ -512,7 +512,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted(factors={
+        return self.__converted_with_dicts(factors={
             'supported': VOLUME_UNITS,
             'to': CONVERT_TO_LITERS,
             'from': CONVERT_FROM_LITERS
@@ -531,7 +531,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted(factors = {
+        return self.__converted_with_dicts(factors = {
             'supported': TEMPERATURE_UNITS,
             'to': CONVERT_TO_CELSIUS,
             'from': CONVERT_FROM_CELSIUS
@@ -545,7 +545,7 @@ class Quantity:
         Returns a new Quantity with converted measurements.
         """
 
-        return self.converted_auto(Quantity._PHYSICS_UNITS)
+        return self.converted(Quantity._PHYSICS_UNITS)
 
     def standardized_chemistry(self) -> Quantity:
 
@@ -555,7 +555,7 @@ class Quantity:
         Returns a new Quantity with converted measurements
         """
 
-        return self.converted_auto(Quantity._CHEMISTRY_UNITS)
+        return self.converted(Quantity._CHEMISTRY_UNITS)
     
     def simplified(self) -> Quantity:
         """
