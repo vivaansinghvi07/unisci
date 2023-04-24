@@ -10,7 +10,8 @@ __all__ = [
     'convert',
     'metric_base',
     'metric_factor',
-    'conversion_factor'
+    'conversion_factor',
+    'convert_metric',
 ]
 
 def _check_illegal(target: str, original: str, units: dict):
@@ -109,7 +110,7 @@ def convert(number: Union[int, float], target: str, original: str) -> Union[int,
     Returns: a new number with the original unit converted to the target unit.
     """
 
-    conversion_functions = [convert_length, convert_mass, convert_time, convert_volume]
+    conversion_functions = [convert_length, convert_mass, convert_time, convert_volume, convert_metric]
     for func in conversion_functions:
         try:
             return func(number, target, original)
