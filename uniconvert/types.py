@@ -426,21 +426,24 @@ class Quantity:
         supported = factors['supported']
         to_dict = factors['to']
         from_dict = factors['from']
-
-        # checks for illegal values
-        if target_base not in supported:
-            raise UnitError("Target unit is not supported in this function.")
-        elif original != None and og_base not in supported:
-            raise UnitError("Original unit is not supported in this function.")
         
         # auto-determines and converts every source unit
         conversion_factor = 1
         new_units = {target: 0}
         for type in self.unit_type: 
             type_base = metric_base(type)
-            if (original == None and type_base in supported) or (original != None and type_base == og_base):
+            
+            # checks for metric conversion - doesn't have to be supported 
+            if (original == None or (original and og_base == type_base)) and type_base == target_base:
+                conversion_factor *= metric_factor(type) / metric_factor(target)
+                new_units[target] += self.unit_type[type]
+
+            # other normal conversions - has to be supported
+            elif (original == None or (original != None and type_base == og_base)) and type_base in supported and target_base in supported:
                 conversion_factor *= (to_dict[type_base] * metric_factor(type) * from_dict[target_base] / metric_factor(target)) ** self.unit_type[type]
                 new_units[target] += self.unit_type[type]
+
+            # otherwise just copy it
             else:
                 new_units[type] = self.unit_type[type]
 
