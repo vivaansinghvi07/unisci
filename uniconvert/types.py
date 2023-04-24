@@ -434,12 +434,12 @@ class Quantity:
             type_base = metric_base(type)
             
             # checks for metric conversion - doesn't have to be supported 
-            if (original == None or (original and og_base == type_base)) and type_base == target_base:
+            if (original == None or (original and original == type)) and type_base == target_base:
                 conversion_factor *= (metric_factor(type) / metric_factor(target)) ** self.unit_type[type]
                 new_units[target] += self.unit_type[type]
 
             # other normal conversions - has to be supported
-            elif (original == None or (original != None and type_base == og_base)) and type_base in supported and target_base in supported:
+            elif (original == None or (original != None and original == type)) and type_base in supported and target_base in supported:
                 conversion_factor *= (to_dict[type_base] * metric_factor(type) * from_dict[target_base] / metric_factor(target)) ** self.unit_type[type]
                 new_units[target] += self.unit_type[type]
 
