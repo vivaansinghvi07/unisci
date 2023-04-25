@@ -46,8 +46,8 @@ CONVERT_TO_GRAMS = {
     'st': 6356,
     'amu': 1.661e-24
 }
-CONVERT_FROM_KILOGRAMS = {key: 1 / value for key, value in CONVERT_TO_KILOGRAMS.items()}
-MASS_UNITS = list(CONVERT_FROM_KILOGRAMS.keys())
+CONVERT_FROM_GRAMS = {key: 1 / value for key, value in CONVERT_TO_GRAMS.items()}
+MASS_UNITS = list(CONVERT_FROM_GRAMS.keys())
 
 # for time conversions
 CONVERT_TO_SECONDS = {
@@ -84,13 +84,26 @@ CONVERT_TO_CELSIUS = {
 CONVERT_FROM_CELSIUS = {key: 1 / value for key, value in CONVERT_TO_CELSIUS.items()}
 TEMPERATURE_UNITS = list(CONVERT_FROM_CELSIUS.keys())
 
+# supported units for auto-simplification - first one for each special unit must be in the most basic form
 AUTO_SIMPLIFY = [
     [{'kg': 1, 'm': 1, 's': -2}, 'N'],      # Newtons
-    [{'N': 1, 'm': 1}, 'J'],                # Joules
-    [{'kg': 1, 'm': 2, 's': -2}, 'J'],   
-    [{'J': 1, 's': -1}, 'W'],               # Watts
-    [{'N': 1, 'm': 1, 's': -1}, 'W'], 
-    [{'kg': 1, 'm': 2, 's': -3}, 'W'],
-    [{'mol': 1, 'L': -1}, 'M']              # Molarity
+    [{'J': 1, 'm': -1}, 'N'],
+    [{'kg': 1, 'm': 2, 's': -2}, 'J'],      # Joules
+    [{'N': 1, 'm': 1}, 'J'],             
+    [{'kg': 1, 'm': 2, 's': -3}, 'W'],      # Watts
+    [{'N': 1, 'm': 1, 's': -1}, 'W'],
+    [{'J': 1, 's': -1}, 'W'],          
+    [{'mol': 1, 'L': -1}, 'M'],             # Molarity
+    [{'dm': 3}, 'L'],                       # Liters
+    [{'cm': 3}, 'mL'],                      # Milliliters
+    [{'J': 1, 'C': -1}, 'V']                # Volts
 ]
-SPECIAL_UNITS = [unit for _, unit in AUTO_SIMPLIFY]
+FORCE_SIMPLIFY = {
+    'N': {'kg': 1, 'm': 1, 's': -2},        # Newtons
+    'J': {'kg': 1, 'm': 2, 's': -2},        # Joules
+    'W': {'kg': 1, 'm': 2, 's': -3},        # Watts
+    'L': {'dm': 3},                         # Liters
+    'mL': {'cm': 3},                        # Milliliters
+}
+SPECIAL_UNITS = set([unit for _, unit in AUTO_SIMPLIFY])    # stores the special units (['N', 'J', ...])
+FORCED_SPECIAL_UNITS = list(FORCE_SIMPLIFY.keys())
