@@ -104,6 +104,7 @@ FORCE_SIMPLIFY = {
     'W': {'kg': 1, 'm': 2, 's': -3},        # Watts
     'L': {'dm': 3},                         # Liters
     'mL': {'cm': 3},                        # Milliliters
+    'M': {'mol': 1, 'L': -1},               # Molarity
 }
 SPECIAL_UNITS = set([unit for _, unit in AUTO_SIMPLIFY])    # stores the special units (['N', 'J', ...])
 FORCED_SPECIAL_UNITS = list(FORCE_SIMPLIFY.keys())
