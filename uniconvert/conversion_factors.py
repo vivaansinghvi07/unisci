@@ -76,13 +76,13 @@ CONVERT_FROM_LITERS = {key: 1 / value for key, value in CONVERT_TO_LITERS.items(
 VOLUME_UNITS = list(CONVERT_FROM_LITERS.keys())
 
 # for temperature converisons (absolute, not relative)
-CONVERT_TO_CELSIUS = {
+CONVERT_TO_KELVIN = {
     'deg. C': 1,
     'deg. F': 5 / 9,
     'K': 1,
 }
-CONVERT_FROM_CELSIUS = {key: 1 / value for key, value in CONVERT_TO_CELSIUS.items()}
-TEMPERATURE_UNITS = list(CONVERT_FROM_CELSIUS.keys())
+CONVERT_FROM_KELVIN = {key: 1 / value for key, value in CONVERT_TO_KELVIN.items()}
+TEMPERATURE_UNITS = list(CONVERT_FROM_KELVIN.keys())
 
 # supported units for auto-simplification - first one for each special unit must be in the most basic form
 AUTO_SIMPLIFY = [
