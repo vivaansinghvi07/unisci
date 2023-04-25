@@ -702,7 +702,7 @@ class Temperature:
         Raises: UnitError if there is a wrong unit of measurement.
         """
 
-        if type not in TEMPERATURE_UNITS:
+        if type not in CONVERT_TO_KELVIN.keys():
             raise UnitError(f"Invalid unit of measurement for a temperature: '{type}'")
 
         self.type = type
@@ -854,7 +854,7 @@ class Temperature:
         """
 
         # check for invalid
-        if target not in TEMPERATURE_UNITS:
+        if target not in CONVERT_TO_KELVIN.keys():
             raise UnitError(f"Target unit '{target}' is not a supported temperature.")
         
         # perform number conversion

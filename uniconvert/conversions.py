@@ -14,7 +14,7 @@ __all__ = [
     'convert_metric',
 ]
 
-def _check_illegal(target: str, original: str, units: dict):
+def _check_illegal(target: str, original: str, units: list):
 
     """
     Makes sure that the target and original units are supported for each other
@@ -38,10 +38,12 @@ def convert_length(number: Union[int, float], target: str, original: str) -> Uni
     Returns: a new number with the original unit converted to the target unit. 
     """
 
-    _check_illegal(target, original, LENGTH_UNITS)
+    supported = list(CONVERT_TO_METERS.keys())
+
+    _check_illegal(target, original, supported)
     
     # calculate conversion factor and convert
-    conversion_factor = CONVERT_TO_METERS[original] * CONVERT_FROM_METERS[target]
+    conversion_factor = CONVERT_TO_METERS[original] / CONVERT_TO_METERS[target]
     return number * conversion_factor
     
 def convert_mass(number: Union[int, float], target: str, original: str) -> Union[int, float]:
@@ -56,10 +58,12 @@ def convert_mass(number: Union[int, float], target: str, original: str) -> Union
     Returns: a new number with the original unit converted to the target unit. 
     """
 
-    _check_illegal(target, original, MASS_UNITS)
+    supported = list(CONVERT_TO_GRAMS.keys())
+
+    _check_illegal(target, original, supported)
 
     # calculate conversion factor and convert
-    conversion_factor = CONVERT_TO_GRAMS[original] * CONVERT_FROM_GRAMS[target]
+    conversion_factor = CONVERT_TO_GRAMS[original] / CONVERT_TO_GRAMS[target]
     return number * conversion_factor
 
 def convert_time(number: Union[int, float], target: str, original: str) -> Union[int, float]:
@@ -74,10 +78,12 @@ def convert_time(number: Union[int, float], target: str, original: str) -> Union
     Returns: a new number with the original unit converted to the target unit. 
     """
 
-    _check_illegal(target, original, TIME_UNITS)
+    supported = list(CONVERT_TO_SECONDS.keys())
+
+    _check_illegal(target, original, supported)
 
     # calculate conversion factor and convert
-    conversion_factor = CONVERT_TO_SECONDS[original] * CONVERT_FROM_SECONDS[target]
+    conversion_factor = CONVERT_TO_SECONDS[original] / CONVERT_TO_SECONDS[target]
     return number * conversion_factor
 
 def convert_volume(number: Union[int, float], target: str, original: str) -> Union[int, float]:
@@ -92,10 +98,12 @@ def convert_volume(number: Union[int, float], target: str, original: str) -> Uni
     Returns: a new number with the original unit converted to the target unit. 
     """
 
-    _check_illegal(target, original, VOLUME_UNITS)
+    supported = list(CONVERT_TO_LITERS.keys())
+
+    _check_illegal(target, original, supported)
 
     # calculate conversion factor and convert
-    conversion_factor = CONVERT_TO_LITERS[original] * CONVERT_FROM_LITERS[target]
+    conversion_factor = CONVERT_TO_LITERS[original] / CONVERT_TO_LITERS[target]
     return number * conversion_factor
 
 def convert(number: Union[int, float], target: str, original: str) -> Union[int, float]:

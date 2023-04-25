@@ -35,8 +35,6 @@ CONVERT_TO_METERS = {
     'pc': 31e15, 
     'm': 1
 }
-CONVERT_FROM_METERS = {key: 1 / value for key, value in CONVERT_TO_METERS.items()}
-LENGTH_UNITS = list(CONVERT_FROM_METERS.keys())
 
 # for mass conversions
 CONVERT_TO_GRAMS = {
@@ -46,8 +44,6 @@ CONVERT_TO_GRAMS = {
     'st': 6356,
     'amu': 1.661e-24
 }
-CONVERT_FROM_GRAMS = {key: 1 / value for key, value in CONVERT_TO_GRAMS.items()}
-MASS_UNITS = list(CONVERT_FROM_GRAMS.keys())
 
 # for time conversions
 CONVERT_TO_SECONDS = {
@@ -58,8 +54,6 @@ CONVERT_TO_SECONDS = {
     'wk': 3600 * 24 * 7,
     'yr': 3600 * 24 * 7 * 365.25
 }
-CONVERT_FROM_SECONDS = {key: 1 / value for key, value in CONVERT_TO_SECONDS.items()}
-TIME_UNITS = list(CONVERT_FROM_SECONDS.keys())
 
 # for volume conversions
 CONVERT_TO_LITERS = {
@@ -72,8 +66,6 @@ CONVERT_TO_LITERS = {
     'tbsp': 0.2366 / 16,
     'tsp': 0.2366 / 48
 }
-CONVERT_FROM_LITERS = {key: 1 / value for key, value in CONVERT_TO_LITERS.items()}
-VOLUME_UNITS = list(CONVERT_FROM_LITERS.keys())
 
 # for temperature converisons (absolute, not relative)
 CONVERT_TO_KELVIN = {
@@ -81,8 +73,6 @@ CONVERT_TO_KELVIN = {
     'deg. F': 5 / 9,
     'K': 1,
 }
-CONVERT_FROM_KELVIN = {key: 1 / value for key, value in CONVERT_TO_KELVIN.items()}
-TEMPERATURE_UNITS = list(CONVERT_FROM_KELVIN.keys())
 
 # supported units for auto-simplification - first one for each special unit must be in the most basic form
 AUTO_SIMPLIFY = [
