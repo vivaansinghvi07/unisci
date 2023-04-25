@@ -132,9 +132,7 @@ def buffer_system(K_a: Union[numeric, Quantity] = None,
 
     args = _get_args(types=types, arguments=arguments)
 
-    equation = Eq(args["ka"], ((10**-args["pH"]) 
-                               * (args["initial_conc_base"] + 10**-args["pH"]))
-                               / (args["initial_conc_acid"] - 10**-args["pH"]))
+    equation = Eq(args["pH"], -math.log10(args["ka"]) + math.log10(args["initial_conc_base"] / args["initial_conc_acid"]))
 
     solution = solve(equation, (symbols(UNKNOWN)))
 
