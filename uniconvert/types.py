@@ -409,12 +409,48 @@ class Quantity:
             return output.simplified()
         else:
             return output
+        
+    @__register_conversion
+    def converted_metric(self, target: str, original: str = None) -> Quantity:
+        """
+        Performs metric conversions.
+        Arguments: a Quantity, a target metric unit, and an original unit. If both are entered, they must be of the same metric base.
 
-    def __converted_with_dicts(self, factors: dict, target: str, original: str = None) -> Quantity:
+        Raises: CompatabilityError for incompatible units.
+
+        Returns: a new Quantity with the conversions being done.
+        """
+
+        # find bases
+        original_base = metric_base(original)
+        target_base = metric_base(target)
+
+        # filter error
+        if original and original_base != target_base:
+            raise CompatabilityError("Original base is not compatible with the target base.")
+        elif original and original_base not in METRIC_UNITS:
+            raise UnsupportedError("Original units not supported for metric conversions.")
+        elif target_base not in METRIC_UNITS:
+            raise UnsupportedError("Target base comptabile for metric conversions.")
+
+        # checks for metric conversion - doesn't have to be supported 
+        conversion_factor = 1
+        new_units = {target: 0}
+        for type in self.unit_type:
+            type_base = metric_base(type)
+            if (original == None or (original and original == type)) and type_base == target_base:
+                conversion_factor *= (metric_factor(type) / metric_factor(target)) ** self.unit_type[type]
+                new_units[target] += self.unit_type[type]
+            else:
+                new_units[type] = self.unit_type[type]
+
+        return Quantity(self.number * conversion_factor, new_units)
+
+    def __converted_with_dicts(self, factors: dict[str, float], target: str, original: str = None) -> Quantity:
 
         """
-        Arguments: a dictionary of conversion factors in this format: {'supported': LIST1, 'to': DICT1, 'from': DICT2}, 
-        where units are the supported units for the conversion. Also takes in the target unit and original unit. 
+        Arguments: a dictionary of conversion factors that convert to a base SI unit, for example meters, or whichever is supported. 
+        Also takes in the target unit and original unit. 
         If original is not entered, it is automatically interpreted.
         This function also automatically converts metric units, if asked for.
         
@@ -422,28 +458,27 @@ class Quantity:
         """
 
         # get metric bases
-        og_base = metric_base(original)
         target_base = metric_base(target)
+        original_base = metric_base(original)
 
         # loads dictionaries
-        supported = factors['supported']
-        to_dict = factors['to']
-        from_dict = factors['from']
+        supported = list(factors.keys())
+
+        # checks for illegal values
+        if target_base not in supported:
+            raise UnitError("Target unit is not supported in this function.")
+        elif original != None and original_base not in supported:
+            raise UnitError("Original unit is not supported in this function.")
 
         # auto-determines and converts every source unit
         conversion_factor = 1
         new_units = {target: 0}
         for type in self.unit_type: 
             type_base = metric_base(type)
-            
-            # checks for metric conversion - doesn't have to be supported 
-            if (original == None or (original and original == type)) and type_base == target_base:
-                conversion_factor *= (metric_factor(type) / metric_factor(target)) ** self.unit_type[type]
-                new_units[target] += self.unit_type[type]
 
             # other normal conversions - has to be supported
-            elif (original == None or (original and original == type)) and type_base in supported and target_base in supported:
-                conversion_factor *= (to_dict[type_base] * metric_factor(type) * from_dict[target_base] / metric_factor(target)) ** self.unit_type[type]
+            if ((original == None and type_base in supported) or (original and original == type)):
+                conversion_factor *= (factors[type_base] * metric_factor(type) / factors[target_base] / metric_factor(target)) ** self.unit_type[type]
                 new_units[target] += self.unit_type[type]
 
             # otherwise just copy it
@@ -464,11 +499,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted_with_dicts(factors={
-            'supported': LENGTH_UNITS,
-            'to': CONVERT_TO_METERS,
-            'from': CONVERT_FROM_METERS
-        }, target=target, original=original)
+        return self.__converted_with_dicts(factors=CONVERT_TO_METERS, target=target, original=original)
     
     @__register_conversion
     def converted_mass(self, target: str, original: str = None) -> Quantity:
@@ -481,11 +512,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted_with_dicts(factors={
-            'supported': MASS_UNITS,
-            'to': CONVERT_TO_GRAMS,
-            'from': CONVERT_FROM_GRAMS
-        }, target=target, original=original)
+        return self.__converted_with_dicts(factors=CONVERT_TO_GRAMS, target=target, original=original)
 
     @__register_conversion
     def converted_time(self, target: str, original: str = None) -> Quantity:
@@ -498,11 +525,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted_with_dicts(factors={
-            'supported': TIME_UNITS,
-            'to': CONVERT_TO_SECONDS,
-            'from': CONVERT_FROM_SECONDS
-        }, target=target, original=original)
+        return self.__converted_with_dicts(factors=CONVERT_TO_SECONDS, target=target, original=original)
     
     @__register_conversion
     def converted_volume(self, target: str, original: str = None) -> Quantity:
@@ -515,11 +538,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted_with_dicts(factors={
-            'supported': VOLUME_UNITS,
-            'to': CONVERT_TO_LITERS,
-            'from': CONVERT_FROM_LITERS
-        }, target=target, original=original)
+        return self.__converted_with_dicts(factors=CONVERT_TO_LITERS, target=target, original=original)
     
     @__register_conversion
     def converted_temperature(self, target: str, original: str = None) -> Quantity:
@@ -534,11 +553,7 @@ class Quantity:
         Returns: a new Quantity object, with the original unit converted to the target unit. 
         """
 
-        return self.__converted_with_dicts(factors = {
-            'supported': TEMPERATURE_UNITS,
-            'to': CONVERT_TO_CELSIUS,
-            'from': CONVERT_FROM_CELSIUS
-        }, target=target, original=original)
+        return self.__converted_with_dicts(factors=CONVERT_TO_KELVIN, target=target, original=original)
 
     def standardized_physics(self) -> Quantity:
 
@@ -595,13 +610,21 @@ class Quantity:
             multiplier = -1
 
         # searches for unit - guaranteed to be in
-        for special_unit, powers in FORCE_SIMPLIFY.items():      # every special unit    
-            if special_unit == target:                  # first one to be found is most basic
-                for unit in powers:                     # gets the powers
+        for special_unit, powers in FORCE_SIMPLIFY.items():
+
+            # finds the special unit to force simplify to  
+            if special_unit == target:        
+
+                # cycle through each power, applying them          
+                for unit in powers:                     
+
+                    # changes the powers of the base units 
                     if unit in new_types:
                         new_types[unit] += exp * powers[unit] * multiplier 
                     else:
                         new_types[unit] = exp * powers[unit] * multiplier
+
+                # modifies the power of the special unit if found within the types
                 if special_unit in new_types:
                     new_types[special_unit] += exp * -multiplier
                 else:
@@ -619,7 +642,7 @@ class Quantity:
         output = self.__copy__()
 
         # goes until there are no special compound units
-        while len(set(output.unit_type.keys()).intersection(set(FORCED_SPECIAL_UNITS))) != 0:
+        while len(set(map(metric_base, list(output.unit_type.keys()))).intersection(set(FORCED_SPECIAL_UNITS))) != 0:
             output = output.__base_repeat()
     
         return output
@@ -630,11 +653,19 @@ class Quantity:
         Converts the quantity to base form and returns if it was successful.
         """
         for unit in self.unit_type:
-            if unit in FORCED_SPECIAL_UNITS:
+            if metric_base(unit) in FORCED_SPECIAL_UNITS:
+
+                # check if need to convert to base metric first - exception for mL and things like that
+                if unit != metric_base(unit) and unit not in FORCED_SPECIAL_UNITS:
+                    unit = metric_base(unit)
+                    self = self.converted_metric(target=metric_base(unit))
+
+                # reverse conversion to the units and remove all the 0-powers
                 self = self.force_simplified(target=unit, exp=-self.unit_type[unit])
                 self.__rm_zeroes()
-        return self
 
+        # return after the one cycle
+        return self
 
 class Temperature:
 
@@ -731,7 +762,7 @@ class Temperature:
             raise TypeError("Only Temperature objects can be added to Temperatre objects.")
 
         # converts other to the same type and then returns
-        return Temperature(self.number + CONVERT_TO_CELSIUS[other.type] * CONVERT_FROM_CELSIUS[self.type] * other.number, self.type)
+        return Temperature(self.number + CONVERT_TO_KELVIN[other.type] / CONVERT_TO_KELVIN[self.type] * other.number, self.type)
     
     def __radd__(self, other: Temperature) -> Temperature:
 
