@@ -388,6 +388,8 @@ class Quantity:
     def converted(self, target_units: list) -> Quantity:
 
         """
+        Note: You must enter base units for things function to work. For example, if you want to convert {'cm': 3} to {'mL': 1}, use the force_simplified() method.
+        
         Arguments: A list of units to convert to. The program will try to convert the Quantity to each unit provided in this list.
 
         Raises: UnitError for unsupported units.
@@ -397,6 +399,7 @@ class Quantity:
 
         output = self.__copy__()
 
+        # applies every conversion function where possible
         for conversion in target_units:
             for function in _CONVERT_FUNCS:
                 try:
