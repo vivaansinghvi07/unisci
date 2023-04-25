@@ -103,12 +103,13 @@ def nernst_equation(reduction_potential: Union[numeric, Quantity] = None,
     
     return solution[0]
 
-def weak_acid_pH(K_a: Union[numeric, Quantity] = None,
-                 initial_concentration: Union[numeric, Quantity] = None,
+def buffer_system(K_a: Union[numeric, Quantity] = None,
+                 acid_concentration: Union[numeric, Quantity] = None,
+                 base_concentration: Union[numeric, Quantity] = None,
                  pH: numeric = None):
     """
     Note: This function assumes dissassociation into one proton only.
-    Arguments: two of the following: the K_a value of the acid, the intital concentration (if in number form, assumed to be in M), and the pH of the resulting solution.
+    Arguments: four of the following: the K_a value of the acid, the intital concentration (if in number form, assumed to be in M) of the acid, conjugate base, and protons, and the pH of the resulting solution.
 
     Raises: ArgumentError for wrong argument count. One must be empty. A CompatabilityError for incompatible values.
 
@@ -117,19 +118,23 @@ def weak_acid_pH(K_a: Union[numeric, Quantity] = None,
 
     arguments = {
         "ka": K_a,
-        "initial_conc": initial_concentration,
+        "initial_conc_acid": acid_concentration,
+        "initial_conc_base": base_concentration,
         "pH": pH
     }
 
     types = {
         "ka": {},
-        "initial_conc": {'M': 1},
+        "initial_conc_acid": {'M': 1},
+        "initial_conc_base": {'M': 1},
         "pH": {}
     }
 
     args = _get_args(types=types, arguments=arguments)
 
-    equation = Eq(10**-args["pH"], (args["ka"] + math.sqrt(args["ka"]**2 + 4*args["ka"]*args["initial_conc"])) / 2)
+    equation = Eq(args["ka"], ((10**-args["pH"]) 
+                               * (args["initial_conc_base"] + 10**-args["pH"]))
+                               / (args["initial_conc_acid"] - 10**-args["pH"]))
 
     solution = solve(equation, (symbols(UNKNOWN)))
 
