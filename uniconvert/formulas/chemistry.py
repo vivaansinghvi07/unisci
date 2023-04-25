@@ -1,11 +1,10 @@
-from sympy import Eq, symbols, solve
+from sympy import Eq, symbols, solve, log
 from typing import Union
 from uniconvert.types import *
 from uniconvert.types import numeric
 from uniconvert.error import *
 from uniconvert.constants import *
 from uniconvert.conversion_factors import *
-import math
 
 UNKNOWN = 'x'
 
@@ -65,7 +64,7 @@ def _get_args(types: dict[str, dict[str, int]], arguments: dict[str, Union[Quant
 def nernst_equation(reduction_potential: Union[numeric, Quantity] = None,
                     standard_potential: Union[numeric, Quantity] = None,
                     temperature: Union[numeric, Temperature, Quantity] = None,
-                    reaction_quotient: Union[numeric, Quantity] = None,
+                    reaction_quotient: numeric = None,
                     electron_count: numeric = None) -> Quantity:
     """
     Arguments: Four out of the following five: reduction potential, standard potential, temperature, reaction quotient, and electron count.
@@ -97,7 +96,7 @@ def nernst_equation(reduction_potential: Union[numeric, Quantity] = None,
 
     equation = Eq(args["standard_potential"] - 
                 (R.value * args["temperature"] / (args["electron_count"] * F.value))
-                * math.log(args["reaction_quotient"]), args["reduction_potential"])
+                * log(args["reaction_quotient"]), args["reduction_potential"])
     
     solution = solve(equation, (symbols(UNKNOWN)))
     
@@ -132,7 +131,7 @@ def buffer_system(K_a: Union[numeric, Quantity] = None,
 
     args = _get_args(types=types, arguments=arguments)
 
-    equation = Eq(args["pH"], -math.log10(args["ka"]) + math.log10(args["initial_conc_base"] / args["initial_conc_acid"]))
+    equation = Eq(args["pH"], -log(args["ka"], 10) + log(args["initial_conc_base"] / args["initial_conc_acid"], 10))
 
     solution = solve(equation, (symbols(UNKNOWN)))
 
