@@ -582,7 +582,7 @@ class Quantity:
         Returns: a new converted Quantity.
         """
 
-        if target not in SPECIAL_UNITS:
+        if target not in FORCED_SPECIAL_UNITS:
             raise UnsupportedError(f"Target unit {target} is unsupported. The supported units for forced conversion are: {SPECIAL_UNITS}")
         
         new_types = self.unit_type.copy()
@@ -595,7 +595,7 @@ class Quantity:
             multiplier = -1
 
         # searches for unit - guaranteed to be in
-        for powers, special_unit in AUTO_SIMPLIFY:      # every special unit    
+        for special_unit, powers in FORCE_SIMPLIFY.items():      # every special unit    
             if special_unit == target:                  # first one to be found is most basic
                 for unit in powers:                     # gets the powers
                     if unit in new_types:
@@ -610,6 +610,30 @@ class Quantity:
             
         # almost never will be called; here in case
         raise Exception("Error: Failed to convert.")
+    
+    def to_base_units(self) -> Quantity:
+        """
+        Returns the Quantity with all 'special' units split into their base.
+        """
+
+        output = self.__copy__()
+
+        # goes until there are no special compound units
+        while len(set(output.unit_type.keys()).intersection(set(FORCED_SPECIAL_UNITS))) != 0:
+            output = output.__base_repeat()
+    
+        return output
+            
+
+    def __base_repeat(self) -> Quantity:
+        """
+        Converts the quantity to base form and returns if it was successful.
+        """
+        for unit in self.unit_type:
+            if unit in FORCED_SPECIAL_UNITS:
+                self = self.force_simplified(target=unit, exp=-self.unit_type[unit])
+                self.__rm_zeroes()
+        return self
 
 
 class Temperature:
