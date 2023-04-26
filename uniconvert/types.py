@@ -21,7 +21,7 @@ class Quantity:
     _EXP_CHARS = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
     _NEG_EXP = "⁻"
     _PHYSICS_UNITS = ['m', 's', 'kg', 'L', 'K']
-    _CHEMISTRY_UNITS = ['m', 's', 'g', 'L', 'K']
+    _CHEMISTRY_UNITS = ['m', 's', 'g', 'L', 'K', 'atm']
 
     precision = 3
     auto_format = True
@@ -557,6 +557,18 @@ class Quantity:
         """
 
         return self.__converted_with_dicts(factors=CONVERT_TO_KELVIN, target=target, original=original)
+    
+    @__register_conversion
+    def converted_pressure(self, target: str, original: str = None) -> Quantity:
+        """
+        Arguments: an original unit and a target unit. If original is not entered, it is automatically interpreted.
+
+        Raises: a UnitError if the unit entered is not supported.
+
+        Returns: a new Quantity object, with the original unit converted to the target unit. 
+        """
+        
+        return self.__converted_with_dicts(factors=CONVERT_TO_ATM, target=target, original=original)
 
     def standardized_physics(self) -> Quantity:
 
