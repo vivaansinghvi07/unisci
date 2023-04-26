@@ -8,8 +8,8 @@ Contents
 
 .. toctree::
 
-    usage
-        documentation/test
+   usage
+   documentation/test
 
 
 .. note::
