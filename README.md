@@ -1,13 +1,13 @@
 # UniSci
-A module to perform unit conversions for almost any scientific topic!
+A module to perform unit conversions for almost any scientific topic! This package is available on PyPI [here](https://pypi.org/project/unisci/).
 
 ## Why Use This?
-Short for "Unit Science" UniSci is primarilty focused on being able to use any unit and easily convert it to another. It supports automatic conversions for formulas, condensation of complex units like `kg-m/s²` to `N`, and more!
+Short for "Unit Science", UniSci is primarilty focused on being able to use any unit and easily convert it to another. It supports automatic conversions for formulas, condensation of complex units like `kg-m/s²` to `N`, and more!
 
 ## Installation 
 To install, simply run the following:
 ```
-pip install unisci
+$ pip install unisci
 ```
 
 Then, you can use it as you please!
