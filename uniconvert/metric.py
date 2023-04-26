@@ -26,7 +26,7 @@ METRIC_CONVERSIONS = {
     'Z': 1e21,
     'Y': 1e24
 }
-METRIC_UNITS = ['s', 'm', 'g', 'K', 'mol', 'J', 'W', 'N', 'Pa']     # the ones that are currently supported
+METRIC_UNITS = ['s', 'm', 'g', 'K', 'mol', 'J', 'W', 'N', 'Pa', 'L']     # the ones that are currently supported
 
 def metric_base(unit: str) -> str:
     """
