@@ -23,7 +23,7 @@ def _get_number(value: Union[Quantity, numeric], intended_types: dict, name: str
         # eliminate all special types from intended
         quan_intended_types = Quantity(1, intended_types.copy())
         quan_intended_types = quan_intended_types.to_base_units()
-        value = value.to_base_units()
+        value = value.converted(list(intended_types.keys())).to_base_units()
 
         # fully match value with intended types - turn off auto format for this
         old_format = Quantity.auto_format
@@ -100,7 +100,7 @@ def nernst_equation(reduction_potential: Union[numeric, Quantity] = None,
     args = _get_args(types=types, arguments=arguments)
 
     equation = Eq(args["standard_potential"] - 
-                (R.value * args["temperature"] / (args["electron_count"] * F.value))
+                (R_JOUL.value * args["temperature"] / (args["electron_count"] * F.value))
                 * log(args["reaction_quotient"]), args["reduction_potential"])
     
     solution = solve(equation, (symbols(UNKNOWN)))
@@ -215,3 +215,43 @@ def weak_base(K_b: Union[numeric, Quantity] = None,
     solution = solve(equation, (symbols(UNKNOWN)))
 
     return solution[0]
+
+def ideal_gas(pressure: Union[numeric, Quantity] = None,
+              volume: Union[numeric, Quantity] = None,
+              moles: Union[numeric, Quantity] = None,
+              temperature: Union[numeric, Temperature, Quantity] = None) -> numeric:
+    """
+    Arguments: Enter three of the following four:
+    - pressure (atm)
+    - volume (L)
+    - moles (mol)
+    - temperature (K)
+
+    Raises: ArgumentError for wrong argument count. One must be empty. A CompatabilityError for incompatible values.
+
+    Returns: the missing value as a number.
+    """
+
+    arguments = {
+        "pressure": pressure,
+        "volume": volume,
+        "moles": moles,
+        "temperature": temperature
+    }
+
+    types = {
+        "pressure": {'atm': 1},
+        "volume": {'L': 1},
+        "moles": {'mol': 1},
+        "temperature": {'K': 1}
+    }
+
+    args = _get_args(types=types, arguments=arguments)
+
+    # PV = nRT
+    equation = Eq(args['pressure'] * args['volume'], args['moles'] * R_ATM.value * args['temperature'])
+
+    solutions = solve(equation, (symbols(UNKNOWN)))
+
+    return solutions[0]
+    
