@@ -52,6 +52,7 @@ CONVERT_TO_KELVIN = {
 CONVERT_TO_ATM = {
     'atm': 1,
     'torr': 0.0013157,
+    'mm Hg': 0.0013157,
     'bar': 0.986923,
     'Pa': 0.0000098,
     'psi': 0.068046
