@@ -1,10 +1,10 @@
 from sympy import Eq, symbols, solve, log, sqrt
 from typing import Union
-from uniconvert.types import *
-from uniconvert.types import numeric
-from uniconvert.error import *
-from uniconvert.constants import *
-from uniconvert.conversion_factors import *
+from unisci.types import *
+from unisci.types import numeric
+from unisci.error import *
+from unisci.constants import *
+from unisci.conversion_factors import *
 
 UNKNOWN = 'x'
 

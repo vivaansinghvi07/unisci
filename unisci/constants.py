@@ -1,4 +1,4 @@
-from uniconvert.types import Quantity
+from unisci.types import Quantity
 
 E = 2.718281828
 PI = 3.1415926536
