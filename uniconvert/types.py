@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Union
 from uniconvert.error import *
 from uniconvert.conversion_factors import *
-from uniconvert.conversions import metric_factor, metric_base
+from uniconvert.metric import *
 
 numeric = Union[int, float]
 
