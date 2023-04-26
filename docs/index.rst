@@ -8,8 +8,9 @@ Contents
 
 .. toctree::
 
-   usage.rst
-   documentation/test.rst
+   usage
+   documentation
+   versionhistory
 
 .. note::
 
