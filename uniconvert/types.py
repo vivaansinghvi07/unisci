@@ -413,7 +413,6 @@ class Quantity:
         else:
             return output
         
-    @__register_conversion
     def converted_metric(self, target: str, original: str = None) -> Quantity:
         """
         Performs metric conversions.
@@ -432,9 +431,9 @@ class Quantity:
         if original and original_base != target_base:
             raise CompatabilityError("Original base is not compatible with the target base.")
         elif original and original_base not in METRIC_UNITS:
-            raise UnsupportedError("Original units not supported for metric conversions.")
+            raise UnsupportedError(f"Original unit '{original}' not supported for metric conversions.")
         elif target_base not in METRIC_UNITS:
-            raise UnsupportedError("Target base comptabile for metric conversions.")
+            raise UnsupportedError(f"Target unit '{target}' not supported for metric conversions.")
 
         # checks for metric conversion - doesn't have to be supported 
         conversion_factor = 1
