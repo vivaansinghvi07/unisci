@@ -9,8 +9,8 @@ Contents
 .. toctree::
 
    usage
-   documentation/test
-
+   .. toctree::
+      documentation/test
 
 .. note::
 
