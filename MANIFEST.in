@@ -1,0 +1,5 @@
+include unisci/periodic/periodic-table-lookup.json
+include unisci/periodic/periodic-table-numbers.json
+include unisci/periodic/periodic-table-symbols.json
+include README.md
+include LICENSE
