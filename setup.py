@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='unisci',
-    version='1.0.0',
+    version='1.1.0',
     author='Vivaan Singhvi',
     author_email='singhvi.vivaan@gmail.com',
     description='Units Conversions, and Science Package',
