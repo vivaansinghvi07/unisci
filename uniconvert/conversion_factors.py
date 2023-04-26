@@ -50,6 +50,7 @@ CONVERT_TO_KELVIN = {
 
 # for pressure conversions
 CONVERT_TO_ATM = {
+    'atm': 1,
     'torr': 0.0013157,
     'bar': 0.986923,
     'Pa': 0.0000098,
