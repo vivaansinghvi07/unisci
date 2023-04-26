@@ -595,9 +595,21 @@ class Quantity:
         Automatically turns simple units like kg-m/s^2, into complex ones like Newtons
         If Quantity.auto_format is False, this will not happen automatically.
         """
-        for dict, unit in AUTO_SIMPLIFY: 
-            if self.unit_type == dict:
-                return Quantity(self.number, {unit: 1})
+
+        # temporary conversion to most basic units
+        self_temp = self.to_base_units()
+
+        for dict, unit in AUTO_SIMPLIFY:
+
+            # determine what powers they appear in
+            type_powers = []
+            for type in dict:
+                type_powers.append(self_temp.unit_type[type] / dict[type])
+
+            # if all the powers are the same
+            if len(set(type_powers)) == 1:
+                return self_temp.force_simplified(unit, exp=int(type_powers[0]))
+            
         return Quantity(self.number, self.unit_type)    # for if nothing was able to be simplified
     
     def force_simplified(self, target: str, exp: int = 1) -> Quantity:
