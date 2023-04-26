@@ -599,23 +599,33 @@ class Quantity:
         # temporary conversion to most basic units
         self_temp = self.to_base_units()
 
-        for dict, unit in AUTO_SIMPLIFY:
+        scores = [1e10]
+        options = [self.__copy__()]
 
-            # determine what powers they appear in
-            type_powers = []
-            for type in dict:
-                type_powers.append(self_temp.unit_type[type] / dict[type])
+        for unit, dict in SIMPLIFICATION.items():
+            try:
+                # convert dictionary to base units
+                dict = Quantity(1, dict).to_base_units().units
 
-            # if all the powers are the same
-            if len(set(type_powers)) == 1:
-                return self_temp.force_simplified(unit, exp=int(type_powers[0]))
+                # determine what powers they appear in
+                type_powers = []
+                for type in dict:
+                    type_powers.append(self_temp.unit_type[type] / dict[type])
+
+                # if all the powers are the same and add to list of options
+                if len(set(type_powers)) == 1 and type_powers[0] % 1 == 0:
+                    scores.append(abs(len(self_temp.unit_type) - len(dict)))
+                    options.append(self_temp.force_simplified(unit, exp=int(type_powers[0])))
+            except:
+                continue
             
-        return Quantity(self.number, self.unit_type)    # for if nothing was able to be simplified
+        # return the simplification of best fit
+        return options[scores.index(min(scores))]  
     
     def force_simplified(self, target: str, exp: int = 1) -> Quantity:
         """
         Forces a simplification to a specific unit, such as forcing kg-m/s to N-s (for momentum).
-        Units supported are here viewable in AUTO_SIMPLIFY.
+        Units supported are here viewable in SIMPLIFICATION.
 
         Arguments: A target unit to force convert to, and an integer which the unit is raised to. Must be a special unit.  
 
@@ -624,8 +634,8 @@ class Quantity:
         Returns: a new converted Quantity.
         """
 
-        if target not in FORCED_SPECIAL_UNITS:
-            raise UnsupportedError(f"Target unit {target} is unsupported. The supported units for forced conversion are: {SPECIAL_UNITS}")
+        if target not in SIMPLIFICATION:
+            raise UnsupportedError(f"Target unit {target} is unsupported. The supported units for forced conversion are: {SIMPLIFICATION}")
         
         new_types = self.unit_type.copy()
 
@@ -637,7 +647,9 @@ class Quantity:
             multiplier = -1
 
         # searches for unit - guaranteed to be in
-        for special_unit, powers in FORCE_SIMPLIFY.items():
+        for special_unit, powers in SIMPLIFICATION.items():
+
+            powers = Quantity(1, powers).to_base_units().units
 
             # finds the special unit to force simplify to  
             if special_unit == target:        
@@ -669,23 +681,22 @@ class Quantity:
         output = self.__copy__()
 
         # goes until there are no special compound units
-        while len(set(map(metric_base, list(output.unit_type.keys()))).intersection(set(FORCED_SPECIAL_UNITS))) != 0:
+        while len(set(map(metric_base, list(output.unit_type.keys()))).intersection(set(SIMPLIFICATION))) != 0:
             output = output.__base_repeat()
     
         return output
-            
 
     def __base_repeat(self) -> Quantity:
         """
         Converts the quantity to base form and returns if it was successful.
         """
         for unit in self.unit_type:
-            if metric_base(unit) in FORCED_SPECIAL_UNITS:
+            if metric_base(unit) in SIMPLIFICATION:
 
                 # check if need to convert to base metric first - exception for mL and things like that
-                if unit != metric_base(unit) and unit not in FORCED_SPECIAL_UNITS:
+                if unit != metric_base(unit) and unit not in SIMPLIFICATION:
                     unit = metric_base(unit)
-                    self = self.converted_metric(target=metric_base(unit))
+                    self = self.converted_metric(target=unit)
 
                 # reverse conversion to the units and remove all the 0-powers
                 self = self.force_simplified(target=unit, exp=-self.unit_type[unit])
