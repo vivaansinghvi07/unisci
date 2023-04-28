@@ -1,4 +1,5 @@
 # UniSci
+[![PyPi version](https://badgen.net/pypi/v/pip/)](https://pypi.org/project/unisci)
 A module to perform unit conversions for almost any scientific topic! This package is available on PyPI [here](https://pypi.org/project/unisci/).
 
 ## Why Use This?
