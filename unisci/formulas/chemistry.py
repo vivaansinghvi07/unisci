@@ -1,3 +1,4 @@
+import re
 from sympy import Eq, symbols, solve, log, sqrt
 from typing import Union
 from unisci.types import *
@@ -255,3 +256,106 @@ def ideal_gas(pressure: Union[numeric, Quantity] = None,
 
     return solutions[0]
     
+def molar_mass(molecule: str) -> Quantity:
+    """
+    Arguments: A molecule to find the molar mass of. Enter subscripts as normal numbers. Exclude coefficients or charges. Parentheses are supported.
+
+    Raises: UnsupportedError for a wrongly formatted molecule.
+
+    Returns: The molar mass as a Quantity in g/mol.
+    """
+
+    # store sum
+    total_mass = Quantity(0, {'g': 1, 'mol': -1})
+
+    # empty vars
+    parens = []
+    temp_inside_paren = ""
+    temp_paren_num = ""
+    non_paren = ""
+    paren_level = 0
+    paren_numbers = []
+    find_num = False
+    i = 0
+
+    # go through the molecule
+    while i < len(molecule):
+
+        # gets the character
+        c = molecule[i]
+
+        # open parentheses
+        if c in ['(', '[']:            
+            paren_level += 1
+            if paren_level > 1:
+                temp_inside_paren += c
+
+        # closed parentheses
+        elif c in [')', ']']:          
+
+            # if its base parentheses, seperate it
+            if paren_level == 1:
+                find_num = True                     # say that we need to find a number if possible
+                parens.append(temp_inside_paren)    # add to the things inside parentheses
+                temp_inside_paren = ""              # reset variable
+
+            # otherwise include it
+            else:
+                temp_inside_paren += c           
+
+            # decrease parentheses level no matter what
+            paren_level -= 1
+
+        # get the number after the parentheses
+        elif find_num:       
+
+            # keep adding to the number   
+            if c.isnumeric():
+                temp_paren_num += c
+
+            # if not part of the number go back a character and add number to the paren numbers
+            else:
+                paren_numbers.append(int(temp_paren_num))   # adds integer version to mulitply by thing
+                temp_paren_num = ""                         # resets variables
+                find_num = False
+                i -= 1                                      # moves incrementor back
+
+        # adds to molecules inside the parentheses
+        elif paren_level > 0:
+            temp_inside_paren += c
+
+        # adds to outside parentheses
+        else:
+            non_paren += c
+
+        # increments character address
+        i += 1
+    
+    # adds in case there is a number at the end
+    if temp_paren_num != '':
+        paren_numbers.append(int(temp_paren_num))
+
+    assert len(parens) == len(paren_numbers)
+
+    # adds to the sum
+    for part, factor in zip(parens, paren_numbers):
+        total_mass += factor * molar_mass(part)
+
+    # seperate into elements
+    elements = re.findall('[A-Z][^A-Z]*', non_paren)
+    for element in elements:
+
+        # get number
+        num_str = re.search('[0-9]+', element)
+        num = int(num_str.group()) if num_str != None else 1
+
+        # get element
+        symb = re.search('[A-Z|a-z]+', element).group()
+
+        # get mass
+        try:
+            total_mass += Element(element_symbol=symb).atomic_mass * num
+        except:
+            raise UnsupportedError(f"Element symbol unsupported: '{symb}'.")
+
+    return total_mass
