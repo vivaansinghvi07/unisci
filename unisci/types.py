@@ -413,6 +413,7 @@ class Quantity:
         else:
             return output
         
+    @__register_conversion
     def converted_metric(self, target: str, original: str = None) -> Quantity:
         """
         Performs metric conversions.
