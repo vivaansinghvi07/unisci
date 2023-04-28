@@ -265,6 +265,8 @@ def molar_mass(molecule: str) -> Quantity:
     Returns: The molar mass as a Quantity in g/mol.
     """
 
+    molecule += " "     # for indexing another time
+
     # store sum
     total_mass = Quantity(0, {'g': 1, 'mol': -1})
 
@@ -315,6 +317,8 @@ def molar_mass(molecule: str) -> Quantity:
 
             # if not part of the number go back a character and add number to the paren numbers
             else:
+                if temp_paren_num == "":
+                    temp_paren_num = "1"
                 paren_numbers.append(int(temp_paren_num))   # adds integer version to mulitply by thing
                 temp_paren_num = ""                         # resets variables
                 find_num = False

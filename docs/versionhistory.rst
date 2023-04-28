@@ -16,3 +16,5 @@ Below is a chronological list of the changes made to this package.
         * v1.2.1: Fixed metric conversion not happening properly with the converted() function
 
     * v1.3.0: Added molar mass calculator
+
+      *  v1.3.1: Patched molar mass not working with parentheses with no subscript

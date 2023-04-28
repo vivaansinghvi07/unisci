@@ -7,7 +7,7 @@ copyright = '2023, Vivaan Singhvi'
 author = 'Vivaan Singhvi'
 
 release = '1.3'
-version = '1.3.0'
+version = '1.3.1'
 
 # -- General configuration
 
