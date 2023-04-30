@@ -18,3 +18,5 @@ Below is a chronological list of the changes made to this package.
     * v1.3.0: Added molar mass calculator
 
       *  v1.3.1: Patched molar mass not working with parentheses with no subscript
+
+    * v1.4.0: Added equation balancer

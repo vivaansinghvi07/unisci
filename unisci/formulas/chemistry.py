@@ -1,5 +1,7 @@
 import re
-from sympy import Eq, symbols, solve, log, sqrt
+import math
+from numpy.linalg import solve
+from sympy import Eq, symbols, solve, log
 from typing import Union
 from unisci.types import *
 from unisci.types import numeric
@@ -8,6 +10,11 @@ from unisci.constants import *
 from unisci.conversion_factors import *
 
 UNKNOWN = 'x'
+PAREN_OPEN = 'j'
+PAREN_CLOSE = 'q'
+
+# generate type alias
+expression = type(2*symbols('X'))
 
 def _get_number(value: Union[Quantity, numeric], intended_types: dict, name: str) -> numeric:
     
@@ -265,18 +272,136 @@ def molar_mass(molecule: str) -> Quantity:
     Returns: The molar mass as a Quantity in g/mol.
     """
 
-    molecule += " "     # for indexing another time
-
     # store sum
     total_mass = Quantity(0, {'g': 1, 'mol': -1})
 
-    # empty vars
+    # splits molecule by its parentheses
+    split_molecule = __split_parentheses(molecule)
+    parens = split_molecule["parens"]
+    paren_numbers = split_molecule["paren_numbers"]
+    non_paren = split_molecule["non_paren"]
+
+    assert len(parens) == len(paren_numbers)
+
+    # adds to the sum
+    for part, factor in zip(parens, paren_numbers):
+        total_mass += factor * molar_mass(part)
+
+    # seperate into elements
+    elements = re.findall('[A-Z][^A-Z]*', non_paren)
+    for element in elements:
+
+        # get number
+        num_str = re.search('[0-9]+', element)
+        num = int(num_str.group()) if num_str != None else 1
+
+        # get element
+        symb = re.search('[A-Z|a-z]+', element).group()
+
+        # get mass
+        try:
+            total_mass += Element(element_symbol=symb).atomic_mass * num
+        except:
+            raise UnsupportedError(f"Element symbol unsupported: '{symb}'.")
+
+    return total_mass
+
+def balance_equation(reaction: str) -> dict:
+    """
+    Inputs: A reaction in this form: A + B -> C + D. Don't add any coefficients or have any duplicates!
+
+    Raises: UnsupportedError for impossible reactions.
+
+    Returns: A dictionary of coefficients with each reactant and product as a key.
+    """
+
+    # splits reaction into two parts
+    split_reaction = reaction.split('->')
+    reactants = list(split_reaction[0].split("+"))   # remove the duplicates
+    products = list(split_reaction[1].split("+"))
+
+    # remove whitespace
+    for i in range(len(reactants)):
+        reactants[i] = reactants[i].strip()
+    for i in range(len(products)):
+        products[i] = products[i].strip()
+
+    # gets atom counts in each reactant, stored as a dict mapping a molecule name to a dict of atom counts
+    reactant_atoms = {}
+    product_atoms = {}
+    for reactant in reactants:
+        reactant_atoms[reactant] = get_atoms(reactant)
+    for product in products:
+        product_atoms[product] = get_atoms(product)
+
+    # gets the unique atoms in the reaction
+    unique_atoms = set()
+    for atom_dict in reactant_atoms.values():
+        for atom in atom_dict:
+            unique_atoms.add(atom)
+
+    # checks it against products - they should be equal
+    product_unique_atoms = set()
+    for atom_dict in product_atoms.values():
+        for atom in atom_dict:
+            product_unique_atoms.add(atom)
+    if unique_atoms != product_unique_atoms:
+        raise UnsupportedError("Equation could not be balanced.")
+
+    # generates systems of equations
+    equations = []
+    for atom in unique_atoms:
+        reactants_expression = 0
+        products_expression = 0
+
+        # determine where the atom is in the dictionary, get its coefficient and molecule
+        for reactant, atom_dict in reactant_atoms.items():
+            if atom in atom_dict:
+                reactants_expression += atom_dict[atom] * symbols(__hide_parens(reactant))
+        for product, atom_dict in product_atoms.items():
+            if atom in atom_dict:
+                products_expression += atom_dict[atom] * symbols(__hide_parens(product))
+        
+        # add to system
+        equations.append(Eq(reactants_expression, products_expression))
+
+    # solves the equation
+    symbs = set([__hide_parens(reactant) for reactant in reactants] 
+                  + [__hide_parens(product) for product in products])
+    base_symbol = symbs.pop()
+
+    solution = solve(equations, symbs, dict=True)[0]
+
+    # format coefficients to be whole numbers
+    multiplication_factor = 1
+    for expression in solution.values():
+        div_by = expression.as_numer_denom()[1]
+        if div_by == 1:
+            continue
+        multiplication_factor = math.lcm(multiplication_factor, div_by)
+
+    # return output
+    output = { __show_parens(str(base_symbol)) : multiplication_factor }
+    for symbol, expression in solution.items():
+        output[__show_parens(str(symbol))] = round(float(expression.coeff(base_symbol, 1)) * multiplication_factor)
+    return output
+
+def __split_parentheses(molecule: str) -> dict:
+    """
+    Splits a molecule by whats in its parentheses, returning what's in the parentheses, the subscripts of them, and whats left over.
+    """
+
+    molecule += " "     # for indexing another time
+
+    # empty vars for returning
     parens = []
+    paren_numbers = []
+    non_paren = ""
+
+    # temp values
     temp_inside_paren = ""
     temp_paren_num = ""
-    non_paren = ""
     paren_level = 0
-    paren_numbers = []
     find_num = False
     i = 0
 
@@ -339,27 +464,65 @@ def molar_mass(molecule: str) -> Quantity:
     if temp_paren_num != '':
         paren_numbers.append(int(temp_paren_num))
 
-    assert len(parens) == len(paren_numbers)
+    return {
+        "parens": parens,
+        "paren_numbers": paren_numbers,
+        "non_paren": non_paren
+    }
 
-    # adds to the sum
-    for part, factor in zip(parens, paren_numbers):
-        total_mass += factor * molar_mass(part)
 
-    # seperate into elements
-    elements = re.findall('[A-Z][^A-Z]*', non_paren)
-    for element in elements:
+def get_atoms(molecule: str) -> dict:
+    """
+    Gets a dictionary of atoms and their counts from a generated string.
+    """
+
+    elements_str = __get_atoms_str_loop(molecule)
+    counts = {}
+
+    for ele in re.findall("[A-Z][^A-Z]*", elements_str):
 
         # get number
-        num_str = re.search('[0-9]+', element)
+        num_str = re.search('[0-9]+', ele)
         num = int(num_str.group()) if num_str != None else 1
 
         # get element
-        symb = re.search('[A-Z|a-z]+', element).group()
+        symb = re.search('[A-Z|a-z]+', ele).group()
 
-        # get mass
-        try:
-            total_mass += Element(element_symbol=symb).atomic_mass * num
-        except:
-            raise UnsupportedError(f"Element symbol unsupported: '{symb}'.")
+        if symb in counts:
+            counts[symb] += num
+        else:
+            counts[symb] = num
 
-    return total_mass
+    return counts
+
+def __get_atoms_str_loop(molecule: str) -> str:
+    """
+    Gets a dictionary of atoms and their counts from a molecule.
+    """
+
+    split_molecule = __split_parentheses(molecule)
+    elements_str = split_molecule["non_paren"]
+    parens = split_molecule["parens"]
+    paren_numbers = split_molecule["paren_numbers"]
+
+    for factor, thing in zip(paren_numbers, parens):
+        elements_str += __get_atoms_str_loop(thing) * factor
+
+    return elements_str
+
+def __hide_parens(molecule: str) -> str:
+    """
+    Replaces parentheses with an arbitrary symbol 
+    """
+    
+    # performs substitutions
+    molecule = re.sub('[(\[]', PAREN_OPEN, molecule)
+    molecule = re.sub('[)\]]', PAREN_CLOSE, molecule)
+
+    return molecule
+
+def __show_parens(molecule: str) -> str:
+    """
+    Puts parentheses back from __hide_parens() function.
+    """
+    return molecule.replace(PAREN_OPEN, "(").replace(PAREN_CLOSE, ")")
