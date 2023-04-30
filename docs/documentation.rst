@@ -98,11 +98,11 @@ The reference unit used for this is liters.
 
     'L': 1                  # liters
     'c.': 0.2366,           # cups
-    'pt.': 0.2366 * 2,      # pints
-    'qt.': 0.2366 * 4,      # quarts
-    'gal.': 0.2366 * 16,    # gallons
-    'fl. oz': 0.2366 / 8,   # fluid ounces
-    'tbsp': 0.2366 / 16,    # tablespoons
+    'pt.': 0.2366 * 2       # pints
+    'qt.': 0.2366 * 4       # quarts
+    'gal.': 0.2366 * 16     # gallons
+    'fl. oz': 0.2366 / 8    # fluid ounces
+    'tbsp': 0.2366 / 16     # tablespoons
     'tsp': 0.2366 / 48      # teaspoons
 
 Temperature Conversions
