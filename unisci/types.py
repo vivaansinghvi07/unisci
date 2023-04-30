@@ -2,8 +2,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Union
-from unisci.error import *
-from unisci.conversion_factors import *
+from unisci._error import *
+from unisci._conversion_factors import *
 from unisci.metric import *
 
 numeric = Union[int, float]

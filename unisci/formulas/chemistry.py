@@ -1,13 +1,12 @@
 import re
 import math
-from numpy.linalg import solve
 from sympy import Eq, symbols, solve, log
 from typing import Union
 from unisci.types import *
 from unisci.types import numeric
-from unisci.error import *
+from unisci._error import *
 from unisci.constants import *
-from unisci.conversion_factors import *
+from unisci._conversion_factors import *
 from unisci.formulas._validation import _get_args, UNKNOWN
 
 PAREN_OPEN = 'j'

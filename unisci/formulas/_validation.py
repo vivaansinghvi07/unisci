@@ -1,5 +1,5 @@
 from sympy import symbols
-from unisci.error import *
+from unisci._error import *
 from unisci.types import *
 from unisci.types import numeric
 from typing import Union

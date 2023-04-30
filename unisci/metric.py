@@ -1,5 +1,5 @@
-from unisci.error import *
-from unisci.conversion_factors import *
+from unisci._error import *
+from unisci._conversion_factors import *
 from typing import Union
 
 # what you need to multiply each of these by to get the base metric
