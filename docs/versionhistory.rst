@@ -20,3 +20,5 @@ Below is a chronological list of the changes made to this package.
       *  v1.3.1: Patched molar mass not working with parentheses with no subscript
 
     * v1.4.0: Added equation balancer
+    
+        * v1.4.1: Moved functions around for better maintenance
