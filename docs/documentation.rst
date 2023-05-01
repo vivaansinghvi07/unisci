@@ -264,7 +264,7 @@ Returns a new Quantity with metric conversions being done. This is useful for co
 Specific Conversions
 ~~~~~~~~~~~~~~~~~~~~
 
-The following methods are available for specific conversions (although generally using :code:`quan.converted()` is better):
+The following methods are available for specific conversions, although generally using :code:`quan.converted()` is better:
 
     * :code:`quan.converted_length()`
     * :code:`quan.converted_mass()`
