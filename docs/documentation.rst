@@ -183,6 +183,46 @@ Sets the precision (number of decimal places) of printing output. The default va
 
 Determines if the auto-conversions should be done. For example, when multiplying Quantity's with units :code:`m` and :code:`in`, if :code:`auto_format` is enabled, the product will be in the units of the first number. It also enables auto-condensation of complicated units, which will be elaborated upon further regarding the :code:`x.simplified()` method.
 
+.. code:: python
+
+    >>> length_m = Quantity(1, {'m': 1})
+    >>> length_in = Quantity(40, {'in': 1})
+    >>> print(length_m * length_in)
+    '1.016*10⁰ m²'
+    >>> Quantity.set_auto_format(False)
+    >>> print(length_m * length_in)
+    '4.000*10¹ m-in'
+
+:code:`quan.value`
+~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+    
+    quan.value -> float
+
+Returns the numerical value of the Quantity.
+
+.. code:: python
+
+    >>> x = Quantity(12, {'m': 1})
+    >>> print(x.value)
+    '12.0'
+
+:code:`quan.units`
+~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    quan.units -> dict[str, int]
+
+Returns a dictionary of units and powers of the Quantity's overall composition. Internally, the dictionary is stored as :code:`quan.unit_type`, but calling :code:`quan.units` is better because it returns a copy of the dictionary.
+
+.. code:: python
+
+    >>> x = Quantity(12, {'m': 1})
+    >>> print(x.units)
+    {'m': 1}
+
 :code:`quan.converted()`
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -194,11 +234,58 @@ Returns a Quantity converted to all the units it can in the provided list of tar
 
 .. code:: python
 
-    length = Quantity(1, {'m': 1})
-    print(length.converted(['ft']))
-
-.. code::
-
-    3.281*10⁰ ft
+    >>> velocity = Quantity(1, {'in': 1, 'min': -1})
+    >>> print(velocity)
+    '1.000*10⁰ in/min'
+    >>> velocity = velocity.converted(['cm', 's'])
+    >>> print(velocity)
+    '4.233*10⁻² cm/s'
 
 Supported units for conversion can be found in the :ref:`Supported Conversions` section.
+
+:code:`quan.converted_metric()`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    quan.converted_metric(target: str, original: str) -> Quantity
+
+Returns a new Quantity with metric conversions being done. This is useful for complex units that aren't supported in normal conversions, such as Newtons or Joules.
+
+.. code:: python
+
+    >>> energy = Quantity(1000, {'J': 1})
+    >>> print(energy)
+    '1.000*10³ J'
+    >>> energy = energy.converted_metric(original='J', target='kJ')
+    >>> print(energy)
+    '1.000*10⁰ kJ'
+
+Specific Conversions
+~~~~~~~~~~~~~~~~~~~~
+
+The following methods are available for specific conversions (although generally using :code:`quan.converted()` is better):
+
+    * :code:`quan.converted_length()`
+    * :code:`quan.converted_mass()`
+    * :code:`quan.converted_time()`
+    * :code:`quan.converted_volume()`
+    * :code:`quan.converted_temperature()`
+    * :code:`quan.converted_pressure()`
+
+All of the following follow the same format:
+
+.. code:: python
+
+    quan.converted_function(target: str, original: str) -> Quantity
+
+They take in a target unit and an optional original unit. If no original unit is entered, all compatible conversions will be done to the target unit. These are useful for when you want to convert only one kind of unit to the other, as shown here:
+
+.. code:: python
+
+    >>> weird_unit = Quantity(1, {'m': 1, 'ft': -1})
+    >>> print(weird_unit)
+    '1.000*10⁰ m/ft'
+    >>> weird_unit = weird_unit.converted_length(original='ft', target='in')
+    >>> print(weird_unit)
+    '8.333*10⁻² m/in'
