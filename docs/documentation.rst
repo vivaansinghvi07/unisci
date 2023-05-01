@@ -3,6 +3,8 @@ Documentation
 
 Below is documentation for the various features in this module!
 
+.. _Supported Conversions:
+
 Supported Conversions
 ---------------------
 
@@ -130,8 +132,8 @@ The reference unit used for this is the atm.
     'Pa': 0.0000098         # pascals
     'psi': 0.068046         # pounds per cubed inch
 
-Quantity Class
---------------
+Quantity
+--------
 
 This is the class that will manage most of your conversions. To import this, you can run either of the following:
 
@@ -192,7 +194,6 @@ Returns a Quantity converted to all the units it can in the provided list of tar
 
 .. code:: python
 
-    from unisci import Quantity
     length = Quantity(1, {'m': 1})
     print(length.converted(['ft']))
 
@@ -200,4 +201,4 @@ Returns a Quantity converted to all the units it can in the provided list of tar
 
     3.281*10⁰ ft
 
-Supported units for conversion can be found below.
+Supported units for conversion can be found in the :ref:`Supported Conversions` section.
