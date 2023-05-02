@@ -369,3 +369,33 @@ Here is an example:
     >>> print(velocity.standardized_physics())
     '2.998*10⁸ m/s'
 
+Supported Operations
+~~~~~~~~~~~~~~~~~~~~
+
+Supported operations using the Quantity class involve:
+
+    * Multiplication: With a number or a Quantity
+    * Division: With a mumber or a Quantity
+    * Addition: With a number (when Quantity is unitless) or a Quantity
+    * Exponents: With an integer power
+
+Here is an example of them in action:
+
+.. code:: python
+
+    >>> f1 = Quantity(1, {'N': 1})
+    >>> m2 = Quantity(12, {'lb': 1})
+    >>> a2 = Quantity(3, {'mi': 1, 'hr': -2})
+    >>> print(f"{f1}, {m2}, {a2}")
+    '1.000*10⁰ N, 1.200*10¹ lb, 3.000*10⁰ mi/hr²'
+    >>> f2 = m2 * a2            # multiplication
+    >>> print(f2)
+    '3.600*10¹ lb-mi/hr²'
+    >>> f3 = f1 + f2
+    >>> print(f3)               # addition
+    '1.002*10⁰ N'
+    >>> m3 = Quantity(6.00, {'st': 1})
+    >>> a3 = f3 / m3            # division
+    >>> print(a3)
+    '2.627*10⁻² m/s²'
+
