@@ -89,7 +89,7 @@ The reference unit used for this is seconds.
     'hr': 3600                      # hours
     'dy': 3600 * 24                 # days
     'wk': 3600 * 24 * 7             # weeks
-    'yr': 3600 * 24 * 7 * 365.25    # year
+    'yr': 3600 * 24 * 365.25    # year
 
 Volume Conversions
 ++++++++++++++++++
@@ -289,3 +289,83 @@ They take in a target unit and an optional original unit. If no original unit is
     >>> weird_unit = weird_unit.converted_length(original='ft', target='in')
     >>> print(weird_unit)
     '8.333*10⁻² m/in'
+
+:code:`quan.simplified()`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    quan.simplified() -> Quantity
+
+Returns a Quantity with units automatically condensed into complex units. If `Quantity.auto_format` is set to True, this will happen automatically upon conversions or multiplications with other units.
+
+.. code:: python
+
+    >>> Quantity.set_auto_format(False)
+    >>> force = Quantity(1, {'m': 1, 'kg': 1, 's': -2})
+    >>> print(force)
+    '1.000*10⁰ m-kg/s²'
+    >>> print(force.simplified())
+    '1.000*10⁰ N'
+
+:code:`quan.force_simplified()`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    quan.force_simplified(target: str, exp: int = 1) -> Quantity
+
+Forcibly converts a unit to the given target. Does this by multiplying by the inverse of the 'base units'.
+
+.. code:: python
+
+    >>> acceleration = Quantity(1, {'m': 1, 's': -2})
+    >>> print(acceleration)
+    '1.000*10⁰ m/s²'
+    >>> print(acceleration.force_simplified(target='N', exp=1))
+    '1.000*10⁰ N/kg'
+
+:code:`quan.to_base_units()`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    quan.to_base_units() -> Quantity
+
+Simplifies a Quantity's complicated units to their most 'basic' units.
+
+.. code:: python
+
+    >>> energy = Quantity(1, {'J': 1})
+    >>> print(energy)
+    '1.000*10⁰ J'
+    >>> print(energy.to_base_units())
+    '1.000*10⁰ kg-m²/s²'
+
+Standardizing Functions
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Here are the functions that are currently included in this package.
+
+.. code:: python
+
+    quan.standardized_physics() -> Quantity 
+    quan.standardized_chemistry() -> Quantity
+
+Standardizes a Quantity to the standard units in that discipline. Here are the converions made: 
+
+.. code:: python
+
+    PHYSICS_UNITS = ['m', 's', 'kg', 'L', 'K']
+    CHEMISTRY_UNITS = ['m', 's', 'g', 'L', 'K', 'atm']
+
+Here is an example:
+
+.. code:: python
+
+    >>> velocity = Quantity(1, {'ly': 1, 'yr': -1})
+    >>> print(velocity)
+    '1.000*10⁰ ly/yr'
+    >>> print(velocity.standardized_physics())
+    '2.998*10⁸ m/s'
+
