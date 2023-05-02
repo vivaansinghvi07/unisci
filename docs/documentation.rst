@@ -89,7 +89,7 @@ The reference unit used for this is seconds.
     'hr': 3600                      # hours
     'dy': 3600 * 24                 # days
     'wk': 3600 * 24 * 7             # weeks
-    'yr': 3600 * 24 * 365.25    # year
+    'yr': 3600 * 24 * 365.25        # year
 
 Volume Conversions
 ++++++++++++++++++
@@ -152,11 +152,8 @@ Where <value> is the numerical value of the Quantity and <dict> is a dictionary 
 
 .. code:: python
 
-    length = Quantity(1, {'m': 1, 's': -2})
-    print(length)
-
-.. code:: 
-
+    >>> length = Quantity(1, {'m': 1, 's': -2})
+    >>> print(length)
     1.000*10⁰ m/s²
 
 Below are methods associated with this class. :code:`quan` represents an arbitrary Quantity object.
@@ -188,10 +185,10 @@ Determines if the auto-conversions should be done. For example, when multiplying
     >>> length_m = Quantity(1, {'m': 1})
     >>> length_in = Quantity(40, {'in': 1})
     >>> print(length_m * length_in)
-    '1.016*10⁰ m²'
+    1.016*10⁰ m²
     >>> Quantity.set_auto_format(False)
     >>> print(length_m * length_in)
-    '4.000*10¹ m-in'
+    4.000*10¹ m-in
 
 :code:`quan.value`
 ~~~~~~~~~~~~~~~~~~
@@ -206,7 +203,7 @@ Returns the numerical value of the Quantity.
 
     >>> x = Quantity(12, {'m': 1})
     >>> print(x.value)
-    '12.0'
+    12.0
 
 :code:`quan.units`
 ~~~~~~~~~~~~~~~~~~
@@ -236,10 +233,10 @@ Returns a Quantity converted to all the units it can in the provided list of tar
 
     >>> velocity = Quantity(1, {'in': 1, 'min': -1})
     >>> print(velocity)
-    '1.000*10⁰ in/min'
+    1.000*10⁰ in/min
     >>> velocity = velocity.converted(['cm', 's'])
     >>> print(velocity)
-    '4.233*10⁻² cm/s'
+    4.233*10⁻² cm/s
 
 Supported units for conversion can be found in the :ref:`Supported Conversions` section.
 
@@ -256,10 +253,10 @@ Returns a new Quantity with metric conversions being done. This is useful for co
 
     >>> energy = Quantity(1000, {'J': 1})
     >>> print(energy)
-    '1.000*10³ J'
+    1.000*10³ J
     >>> energy = energy.converted_metric(original='J', target='kJ')
     >>> print(energy)
-    '1.000*10⁰ kJ'
+    1.000*10⁰ kJ
 
 Specific Conversions
 ~~~~~~~~~~~~~~~~~~~~
@@ -285,10 +282,10 @@ They take in a target unit and an optional original unit. If no original unit is
 
     >>> weird_unit = Quantity(1, {'m': 1, 'ft': -1})
     >>> print(weird_unit)
-    '1.000*10⁰ m/ft'
+    1.000*10⁰ m/ft
     >>> weird_unit = weird_unit.converted_length(original='ft', target='in')
     >>> print(weird_unit)
-    '8.333*10⁻² m/in'
+    8.333*10⁻² m/in
 
 :code:`quan.simplified()`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -304,9 +301,9 @@ Returns a Quantity with units automatically condensed into complex units. If `Qu
     >>> Quantity.set_auto_format(False)
     >>> force = Quantity(1, {'m': 1, 'kg': 1, 's': -2})
     >>> print(force)
-    '1.000*10⁰ m-kg/s²'
+    1.000*10⁰ m-kg/s²
     >>> print(force.simplified())
-    '1.000*10⁰ N'
+    1.000*10⁰ N
 
 :code:`quan.force_simplified()`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -321,9 +318,9 @@ Forcibly converts a unit to the given target. Does this by multiplying by the in
 
     >>> acceleration = Quantity(1, {'m': 1, 's': -2})
     >>> print(acceleration)
-    '1.000*10⁰ m/s²'
+    1.000*10⁰ m/s²
     >>> print(acceleration.force_simplified(target='N', exp=1))
-    '1.000*10⁰ N/kg'
+    1.000*10⁰ N/kg
 
 :code:`quan.to_base_units()`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -338,9 +335,9 @@ Simplifies a Quantity's complicated units to their most 'basic' units.
 
     >>> energy = Quantity(1, {'J': 1})
     >>> print(energy)
-    '1.000*10⁰ J'
+    1.000*10⁰ J
     >>> print(energy.to_base_units())
-    '1.000*10⁰ kg-m²/s²'
+    1.000*10⁰ kg-m²/s²
 
 Standardizing Functions
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -387,14 +384,14 @@ Here is an example of them in action:
     >>> m2 = Quantity(12, {'lb': 1})
     >>> a2 = Quantity(3, {'mi': 1, 'hr': -2})
     >>> print(f"{f1}, {m2}, {a2}")
-    '1.000*10⁰ N, 1.200*10¹ lb, 3.000*10⁰ mi/hr²'
+    1.000*10⁰ N, 1.200*10¹ lb, 3.000*10⁰ mi/hr²
     >>> f2 = m2 * a2            # multiplication
     >>> print(f2)
-    '3.600*10¹ lb-mi/hr²'
+    3.600*10¹ lb-mi/hr²
     >>> f3 = f1 + f2
     >>> print(f3)               # addition
-    '1.002*10⁰ N'
+    1.002*10⁰ N
     >>> m3 = Quantity(6.00, {'st': 1})
     >>> a3 = f3 / m3            # division
     >>> print(a3)
-    '2.627*10⁻² m/s²'
+    2.627*10⁻² m/s²
