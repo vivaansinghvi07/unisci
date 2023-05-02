@@ -26,7 +26,7 @@ CONVERT_TO_SECONDS = {
     'hr': 3600,
     'dy': 3600 * 24,
     'wk': 3600 * 24 * 7,
-    'yr': 3600 * 24 * 7 * 365.25
+    'yr': 3600 * 24 * 365.25
 }
 
 # for volume conversions

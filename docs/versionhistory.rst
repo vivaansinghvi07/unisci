@@ -15,3 +15,4 @@ Below is a chronological list of the changes made to this package.
         * v1.4.1: Moved functions around for better maintenance
         * v1.4.2: File organization and renaming
         * v1.4.3: Change :code:`day` to :code:`dy`
+        * v1.4.4: Fix year to second conversion

@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setup(
     name='unisci',
-    version='1.4.3',
+    version='1.4.4',
     author='Vivaan Singhvi',
     author_email='singhvi.vivaan@gmail.com',
     description='Units Conversions, and Science Package',
