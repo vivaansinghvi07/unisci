@@ -155,22 +155,26 @@ class Quantity:
         
         elif isinstance(other, Quantity):
 
+            # convert both to base units
+            self_temp = self.to_base_units()
+            other = other.to_base_units()
+
             # automatically convert all the other's units to self's units
-            other = other.converted(list(self.unit_type.keys()))
+            other = other.converted(list(self_temp.unit_type.keys()))
 
             # check for incompatability
-            if len(self.unit_type) != len(other.unit_type):
+            if len(self_temp.unit_type) != len(other.unit_type):
                 raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
             
             # checks that all powers are the same
-            for key in self.unit_type.keys():
+            for key in self_temp.unit_type.keys():
                 try:
-                    if other.unit_type[key] != self.unit_type[key]:
+                    if other.unit_type[key] != self_temp.unit_type[key]:
                         raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
                 except:
                     raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
                 
-            return Quantity(self.number + other.number, self.unit_type.copy())
+            return Quantity(self_temp.number + other.number, self.unit_type.copy())
         
         else:
             raise UnsupportedError("Type is not supported for addition with Quantity.")
