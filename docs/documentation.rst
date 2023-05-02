@@ -365,9 +365,9 @@ Here is an example:
 
     >>> velocity = Quantity(1, {'ly': 1, 'yr': -1})
     >>> print(velocity)
-    '1.000*10⁰ ly/yr'
+    1.000*10⁰ ly/yr
     >>> print(velocity.standardized_physics())
-    '2.998*10⁸ m/s'
+    2.998*10⁸ m/s
 
 Supported Operations
 ~~~~~~~~~~~~~~~~~~~~
@@ -398,4 +398,3 @@ Here is an example of them in action:
     >>> a3 = f3 / m3            # division
     >>> print(a3)
     '2.627*10⁻² m/s²'
-
