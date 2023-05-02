@@ -159,23 +159,34 @@ class Quantity:
             self_temp = self.to_base_units()
             other = other.to_base_units()
 
+            # stores simplification value
+            stored = Quantity.auto_format
+            Quantity.set_auto_format(False)
+
             # automatically convert all the other's units to self's units
             other = other.converted(list(self_temp.unit_type.keys()))
 
-            # check for incompatability
-            if len(self_temp.unit_type) != len(other.unit_type):
-                raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
-            
-            # checks that all powers are the same
-            for key in self_temp.unit_type.keys():
-                try:
-                    if other.unit_type[key] != self_temp.unit_type[key]:
-                        raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
-                except:
+            try:
+
+                # check for incompatability
+                if len(self_temp.unit_type) != len(other.unit_type):
                     raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
                 
-            return Quantity(self_temp.number + other.number, self.unit_type.copy())
-        
+                # checks that all powers are the same
+                for key in self_temp.unit_type.keys():
+                    try:
+                        if other.unit_type[key] != self_temp.unit_type[key]:
+                            raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
+                    except:
+                        raise CompatabilityError("Quantity addition requires units to be of the same type and order.")
+                    
+                    return Quantity(self_temp.number + other.number, self.unit_type.copy())
+
+            finally:
+
+                # resets to what it was before
+                Quantity.set_auto_format(stored)
+                
         else:
             raise UnsupportedError("Type is not supported for addition with Quantity.")
         
@@ -224,7 +235,7 @@ class Quantity:
         # checks if it is a temperature unit
         elif isinstance(other, Temperature):
             
-            raise CompatabilityError("A Quantity (absolute temperature) is incompatible for addition with a Temperature (relative temperature)")
+            raise CompatabilityError("A Quantity (absolute temperature) is incompatible for multiplication with a Temperature (relative temperature)")
 
         # checks if it is a Quantity - account for every unit type in new Quantity
         elif isinstance(other, Quantity):
@@ -270,7 +281,7 @@ class Quantity:
 
         elif isinstance(other, Temperature):
 
-            raise CompatabilityError("A Quantity (absolute temperature) is incompatible for addition with a Temperature (relative temperature)")
+            raise CompatabilityError("A Quantity (absolute temperature) is incompatible for division with a Temperature (relative temperature)")
 
         elif isinstance(other, Quantity):
 
@@ -278,8 +289,14 @@ class Quantity:
             new_types = {unit: - power for unit, power in other.unit_type.items()}
             new_num = 1 / other.number
 
+            self_temp = self.__copy__()
+
+            for unit in other.unit_type:
+                if unit in self.to_base_units().converted(list(other.unit_type.keys())).units:
+                    self_temp = self.to_base_units()
+
             # performs multiplication with inverted object
-            return self * Quantity(new_num, new_types)
+            return self_temp * Quantity(new_num, new_types)
     
     def __rtruediv__(self, other: Union[int, float, Quantity]) -> Quantity:
 
