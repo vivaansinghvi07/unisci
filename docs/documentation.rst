@@ -395,3 +395,92 @@ Here is an example of them in action:
     >>> a3 = f3 / m3            # division
     >>> print(a3)
     2.627*10⁻² m/s²
+
+Element
+-------
+
+This class represents chemical elements. It uses data from `@Bowserinator <https://github.com/Bowserinator/Periodic-Table-JSON>`_ to represent chemical elements. You can import it using either of the following:
+
+.. code:: python
+
+    from unisci import Element
+    from unisci.types import Element
+
+You initialize an element using EITHER its name, symbol, or atomic number.
+
+.. code:: python
+
+    hydrogen = Element(element_name="hydrogen")
+    hydrogen = Element(element_symbol='H')
+    hydrogen = Element(element_number=1)
+
+Only one of the the three arguments can be entered, otherwise, an error is raised.
+
+Here are some things you can do with this class. Note: :code:`element` represents an arbitrary element.
+
+:code:`element.name`
+~~~~~~~~~~~~~~~~~~~~
+
+Returns the name of the element as a string, capitalized. Note: the name for the element :code:`aluminum` returns :code:`alumunium`.
+
+.. code:: python
+
+    >>> al = Element(element_symbol='Al')
+    >>> al.name
+    'Aluminium'
+
+:code:`element.number`
+~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the element's atomic number.
+
+.. code:: python
+
+    >>> hg = Element(element_name="mercury")
+    >>> hg.number
+    80
+
+:code:`element.symbol`
+~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the element's symbol.
+
+.. code:: python
+
+    >>> iron = Element(element_name="iron")
+    >>> iron.symbol
+    'Fe'
+
+:code:`element.desc`
+~~~~~~~~~~~~~~~~~~~~
+
+Returns the element's description as a String.
+
+.. code:: python
+
+    >>> u = Element(element_number=92)
+    >>> print(u.desc)
+    Uranium is a chemical element with symbol U and atomic number 92. It is a silvery-white metal in the actinide series of the periodic table. A uranium atom has 92 protons and 92 electrons, of which 6 are valence electrons.
+
+:code:`element.discoverer`
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the name of the person who discovered the element.
+
+.. code:: python
+
+    >>> u = Element(element_number=92)
+    >>> u.discoverer
+    'Martin Heinrich Klaproth'
+
+:code:`element.atomic_mass`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the atomic mass of the element in grams per mole.
+
+.. code:: python
+
+    >>> he = Element(element_name="helium")
+    >>> he.atomic_mass
+    Quantity(4.0026022, {'g': 1, 'mol': -1})
+
