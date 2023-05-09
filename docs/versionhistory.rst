@@ -18,3 +18,4 @@ Below is a chronological list of the changes made to this package.
         * v1.4.4: Fix year to second conversion
         * v1.4.5: Allow addition of complex units to equivalent base units
         * v1.4.6: Improve operation flexibility
+        * v1.4.7: Allowed usage of 'u' for micro- prefixed metric units

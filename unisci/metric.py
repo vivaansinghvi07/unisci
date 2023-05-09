@@ -12,6 +12,7 @@ METRIC_CONVERSIONS = {
     'n': 1e-9,
     'µ': 1e-6,
     'mc': 1e-6,     # for those who cannot use the µ symbol
+    'u': 1e-6,      # alternate option
     'm': 1e-3,
     'c': 1e-2,
     'd': 1e-1,
