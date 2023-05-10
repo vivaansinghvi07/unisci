@@ -443,13 +443,15 @@ Returns the element's atomic number.
 :code:`element.symbol`
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Returns the element's symbol.
+Returns the element's symbol. This is also called with the element's :code:`__str__` method.
 
 .. code:: python
 
     >>> iron = Element(element_name="iron")
     >>> iron.symbol
     'Fe'
+    >>> print(iron)
+    Fe
 
 :code:`element.desc`
 ~~~~~~~~~~~~~~~~~~~~
@@ -592,7 +594,7 @@ Returns a dictionary, containing the gas, and a nested dictionary of electron or
 
     >>> mercury = Element(element_symbol="Hg")
     >>> mercury.noble_gas_config
-    {'gas': <unisci.types.Element object at 0x1025a3f10>, 'configuration': {'4f': 14, '5d': 10, '6s': 2}}
+    {'gas': Element(element_symbol='Xe'), 'configuration': {'4f': 14, '5d': 10, '6s': 2}}
 
 :code:`element.electron_affinity`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

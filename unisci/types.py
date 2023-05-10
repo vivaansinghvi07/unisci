@@ -967,6 +967,18 @@ class Element:
                     self.information = table[Element._SYMBOL_TO_NAME[element_symbol]]
             except:
                 raise ArgumentError("Invalid information given. Check your spelling.")
+            
+    def __str__(self) -> str:
+        """
+        Returns the element symbol.
+        """
+        return self.symbol
+    
+    def __repr__(self) -> str:
+        """
+        Returns the element as it would be constructed.
+        """
+        return f"Element(element_symbol='{self.symbol}')"
 
     """
     Below are several properties of the element, returned via information lookup.
