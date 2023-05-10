@@ -1012,7 +1012,7 @@ class Element:
         """
         Returns the state of the element at room temperature.
         """
-        return self.information["state"]
+        return self.information["phase"]
     
     @property 
     def density(self) -> Quantity:
@@ -1101,7 +1101,7 @@ class Element:
         configs = {}
 
         # gets the gas
-        noble_symbol = config_split[0][1:-1:0]   # remove []
+        noble_symbol = config_split[0][1:-1]   # remove []
         noble_gas = Element(element_symbol=noble_symbol)
 
         # gets reset of configurations
@@ -1129,7 +1129,7 @@ class Element:
         """
         Arguments: the level, defaults to first level.
 
-        Raises: an ArgumentError for levels too large, or not integers
+        Raises: an ArgumentError for levels too large, or not integers.
 
         Returns: the level-th ionization energy of the element.
         """
