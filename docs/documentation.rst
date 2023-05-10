@@ -484,3 +484,144 @@ Returns the atomic mass of the element in grams per mole.
     >>> he.atomic_mass
     Quantity(4.0026022, {'g': 1, 'mol': -1})
 
+:code:`element.state`
+~~~~~~~~~~~~~~~~~~~~~
+
+Returns the state of the element at room temperature.
+
+.. code:: python
+
+    >>> n = Element(element_name="nitrogen")
+    >>> n.state
+    'Gas'
+
+:code:`element.density`
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the density of the element at room temperature as a Quantity in g/L if the element is a gas and in g/mL for Liquids or Solids.
+
+.. code:: python
+
+    >>> tungsten = Element(element_symbol="W")
+    >>> tungsten.density
+    Quantity(19.25, {'g': 1, 'mL': -1})
+
+:code:`element.boiling_point`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the boiling point of the element in Kelvin, as a Quantity.
+
+.. code:: python
+
+    >>> fe = Element(element_name="iron")
+    >>> fe.boiling_point
+    Quantity(3134.0, {'K': 1})
+
+:code:`element.melting_point`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the melting point of the element in Kelvin, as a Quantity.
+
+.. code:: python
+
+    >>> fe = Element(element_name="iron")
+    >>> fe.melting_point 
+    Quantity(1811.0, {'K': 1})
+
+:code:`element.period`
+~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the period of the element.
+
+.. code:: python
+
+    >>> k = Element(element_symbol="K")
+    >>> k.period
+    4
+
+:code:`element.group`
+~~~~~~~~~~~~~~~~~~~~~
+
+Returns the group of the element.
+
+.. code:: python
+
+    >>> k = Element(element_symbol="K")
+    >>> k.group
+    1
+
+:code:`element.electron_config_str`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the element's electron configuration as a string.
+
+.. code:: python
+
+    >>> mg = Element(element_symbol="Mg")
+    >>> mg.electron_config_str
+    '1s2 2s2 2p6 3s2'
+
+:code:`element.electron_config`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns a dictionary of electron orbitals and electron counts within those orbitals.
+
+.. code:: python
+
+    >>> mg = Element(element_symbol="Mg")
+    >>> mg.electron_config 
+    {'1s': 2, '2s': 2, '2p': 6, '3s': 2}
+
+:code:`element.noble_gas_config_str`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns a string containing the element's noble gas configuration with the gas.
+
+.. code:: python
+
+    >>> mercury = Element(element_symbol="Hg")
+    >>> mercury.noble_gas_config_str
+    '[Xe] 4f14 5d10 6s2'
+
+:code:`element.noble_gas_config`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns a dictionary, containing the gas, and a nested dictionary of electron orbitals and their counts.
+
+.. code:: python
+
+    >> mercury = Element(element_symbol="Hg")
+    >>> mercury.noble_gas_config
+    {'gas': <unisci.types.Element object at 0x1025a3f10>, 'configuration': {'4f': 14, '5d': 10, '6s': 2}}
+
+:code:`element.electron_affinity`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the electron affinity of the element.
+
+.. code:: python
+
+    >>> oxygen = Element(element_number=8)
+    >>> oxygen.electron_affinity
+    140.976
+
+:code:`element.electronegativity`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the Pauling electronegativity of the element.
+
+.. code:: python
+
+    >>> oxygen = Element(element_number=8)
+    >>> oxygen.electronegativity
+    3.44
+
+:code:`element.get_ionization_energy(level)`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the level-th ionization energy of the element as a Quantity in kJ/mol.
+
+.. code:: python
+
+    >>> oxygen.get_ionization_energy(level=1)
+    Quantity(1313.9, {'kJ': 1, 'mol': -1})
