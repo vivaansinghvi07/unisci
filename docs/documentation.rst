@@ -590,7 +590,7 @@ Returns a dictionary, containing the gas, and a nested dictionary of electron or
 
 .. code:: python
 
-    >> mercury = Element(element_symbol="Hg")
+    >>> mercury = Element(element_symbol="Hg")
     >>> mercury.noble_gas_config
     {'gas': <unisci.types.Element object at 0x1025a3f10>, 'configuration': {'4f': 14, '5d': 10, '6s': 2}}
 
