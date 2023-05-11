@@ -21,3 +21,4 @@ Below is a chronological list of the changes made to this package.
         * v1.4.7: Allowed usage of 'u' for micro- prefixed metric units
         * v1.4.8: Fixes in Element class
     * v1.5.0: Added :code:`__str__` and :code:`__repr__` to Element
+    * v1.6.0: Temperature class addition and subtraction changed

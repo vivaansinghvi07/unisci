@@ -806,15 +806,24 @@ class Temperature:
 
         return self * other
     
-    def __add__(self, other: Temperature) -> Temperature:
+    def __add__(self, other: Quantity | Temperature) -> Temperature:
 
         """
+        Takes the second argument as an absolute increase in temperature, which is added to the first temperature.
+
         Arguments: Another temperature object to add to self.
 
         Raises: TypeError for wrong types (anything other than Temperature).
 
         Returns: A new Temperature object - the sum.
         """
+
+        # detects for a Quantity being added
+        if isinstance(other, Quantity):
+            other = other.converted_temperature(target='K')
+            if other.units != {'K': 1}:
+                raise TypeError("Incorrect types for addition with a temperature.")
+            return Temperature(self.number + other.converted_temperature(target=self.type).number, self.type)
 
         # detects for incorrect type
         if not isinstance(other, Temperature):
@@ -823,33 +832,22 @@ class Temperature:
         # converts other to the same type and then returns
         return Temperature(self.number + CONVERT_TO_KELVIN[other.type] / CONVERT_TO_KELVIN[self.type] * other.number, self.type)
     
-    def __radd__(self, other: Temperature) -> Temperature:
+    def __sub__(self, other: Temperature) -> Quantity:
 
         """
-        Simply reversed addition. See __add__() for more information.
-        """
+        Determines the absolute temperature difference between the two Temperatures.
 
-        return other + self
-    
-    def __sub__(self, other: Temperature) -> Temperature:
-
-        """
         Arguments: Another temperature object to subtract from self.
 
         Raises: TypeError for wrong types (anything other than Temperature).
 
-        Returns: A new Temperature object - the difference.
+        Returns: A new Quantity object - the difference.
         """
+        
+        if not isinstance(other, Temperature):
+            raise UnsupportedError("Unsupported type for temperature subtraction.")
 
-        return self + (-1 * other)
-    
-    def __rsub__(self, other: Temperature) -> Temperature:
-
-        """
-        Back-up method for subtracting. See __sub__() for more information.
-        """
-
-        return other + (-1 * self)
+        return Quantity(self.number - other.converted(target=self.type).value, {self.type: 1})
     
     def __pow__(self, power: int) -> UnsupportedError:
 
