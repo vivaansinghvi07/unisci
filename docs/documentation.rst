@@ -627,3 +627,10 @@ Returns the level-th ionization energy of the element as a Quantity in kJ/mol.
 
     >>> oxygen.get_ionization_energy(level=1)
     Quantity(1313.9, {'kJ': 1, 'mol': -1})
+
+Temperature
+-----------
+
+The temperature class is intended to store temperatures that are :strong:`relative` temperatures, rather than absolute. A relative temperature, in the case of Fahrenheit and Celsius, is one that is relative to the temperature of water. The commonplace ˚C or ˚F are relative, as 0 ˚C is based on the freezing point of water, etc.
+
+For absolute temperatures, (for uses like :strong:`changes` in temperature), or Kelvin temperatures, use the :code:`Quantity` class.
