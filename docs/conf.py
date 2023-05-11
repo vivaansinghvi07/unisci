@@ -6,8 +6,8 @@ project = 'UniSci'
 copyright = '2023, Vivaan Singhvi'
 author = 'Vivaan Singhvi'
 
-release = '1.6'
-version = '1.6.0'
+release = '1.7'
+version = '1.7.0'
 
 # -- General configuration
 

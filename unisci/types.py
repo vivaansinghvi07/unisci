@@ -334,6 +334,31 @@ class Quantity:
 
         return output
 
+    def __eq__(self, other: Quantity) -> bool:
+
+        """
+        Checks equality between one Quantity and another.
+
+        Arguments: The self and another Quantity.
+
+        Raises: UnsupportedError for anything other than a Quantity.
+
+        Returns: A boolean signifying equality to a certain precision.
+        """
+
+        if not isinstance(other, Quantity):
+            raise UnsupportedError("Quantities can only be tested for equality with other Quantities.")
+        
+        temp = Quantity.auto_format
+        Quantity.set_auto_format(False)
+        
+        try:
+            other = other.to_base_units().converted(list(self.unit_type.keys()))
+            self_temp = self.to_base_units()
+            return abs(other.number - self_temp.number) < 10**-(Quantity.precision*2) and other.unit_type == self_temp.unit_type
+        finally:
+            Quantity.set_auto_format(temp)
+
     def __rm_zeroes(self):
         
         """
@@ -939,7 +964,7 @@ class Element:
     with open(f"{Path(__file__).parent}/periodic/periodic-table-numbers.json") as f:
         _NUMBER_TO_NAME = json.load(f)
 
-    def __init__(self, element_symbol: str = None, element_name: str = None, element_number: int = None) -> Element:
+    def __init__(self, symbol: str = None, name: str = None, atomic_number: int = None) -> Element:
 
         """
         Arguments: EITHER a symbol OR a name for the element. 
@@ -950,19 +975,19 @@ class Element:
         Returns: a new Element
         """
 
-        if [element_symbol, element_name, element_number].count(None) != 2:
+        if [symbol, name, atomic_number].count(None) != 2:
             raise ArgumentError("You must enter only one of the folloing: a name, symbol, or number.")
 
         # obtain json data for the element
         with open(f"{Path(__file__).parent}/periodic/periodic-table-lookup.json", "r") as f:
             table = json.load(f)
             try:
-                if element_name:
-                    self.information = table[element_name.lower().replace('aluminum', 'aluminium')]  # format name to lowercase: "Hydrogen" -> "hydrogen"
-                elif element_number: 
-                    self.information = table[Element._NUMBER_TO_NAME[str(element_number)]]
-                elif element_symbol:
-                    self.information = table[Element._SYMBOL_TO_NAME[element_symbol]]
+                if name:
+                    self.information = table[name.lower().replace('aluminum', 'aluminium')]  # format name to lowercase: "Hydrogen" -> "hydrogen"
+                elif atomic_number: 
+                    self.information = table[Element._NUMBER_TO_NAME[str(atomic_number)]]
+                elif symbol:
+                    self.information = table[Element._SYMBOL_TO_NAME[symbol]]
             except:
                 raise ArgumentError("Invalid information given. Check your spelling.")
             
@@ -976,7 +1001,7 @@ class Element:
         """
         Returns the element as it would be constructed.
         """
-        return f"Element(element_symbol='{self.symbol}')"
+        return f"Element(symbol='{self.symbol}')"
 
     """
     Below are several properties of the element, returned via information lookup.
@@ -1105,14 +1130,14 @@ class Element:
     def noble_gas_config(self) -> dict:
         """
         Returns a dictionary containing the noble gas and the configuration. 
-        Example: {'gas': Element(element_symbol="He"), 'configuration': {'2s': 2, '2p': 4}}
+        Example: {'gas': Element(symbol="He"), 'configuration': {'2s': 2, '2p': 4}}
         """
         config_split = self.noble_gas_config_str.split()
         configs = {}
 
         # gets the gas
         noble_symbol = config_split[0][1:-1]   # remove []
-        noble_gas = Element(element_symbol=noble_symbol)
+        noble_gas = Element(symbol=noble_symbol)
 
         # gets reset of configurations
         list_configs  = config_split[1::]
