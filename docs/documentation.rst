@@ -410,9 +410,9 @@ You initialize an element using EITHER its name, symbol, or atomic number.
 
 .. code:: python
 
-    hydrogen = Element(element_name="hydrogen")
-    hydrogen = Element(element_symbol='H')
-    hydrogen = Element(element_number=1)
+    hydrogen = Element(name="hydrogen")
+    hydrogen = Element(symbol='H')
+    hydrogen = Element(atomic_number=1)
 
 Only one of the the three arguments can be entered, otherwise, an error is raised.
 
@@ -425,7 +425,7 @@ Returns the name of the element as a string, capitalized. Note: the name for the
 
 .. code:: python
 
-    >>> al = Element(element_symbol='Al')
+    >>> al = Element(symbol='Al')
     >>> al.name
     'Aluminium'
 
@@ -436,7 +436,7 @@ Returns the element's atomic number.
 
 .. code:: python
 
-    >>> hg = Element(element_name="mercury")
+    >>> hg = Element(name="mercury")
     >>> hg.number
     80
 
@@ -447,7 +447,7 @@ Returns the element's symbol. This is also called with the element's :code:`__st
 
 .. code:: python
 
-    >>> iron = Element(element_name="iron")
+    >>> iron = Element(name="iron")
     >>> iron.symbol
     'Fe'
     >>> print(iron)
@@ -460,7 +460,7 @@ Returns the element's description as a String.
 
 .. code:: python
 
-    >>> u = Element(element_number=92)
+    >>> u = Element(atomic_number=92)
     >>> print(u.desc)
     Uranium is a chemical element with symbol U and atomic number 92. It is a silvery-white metal in the actinide series of the periodic table. A uranium atom has 92 protons and 92 electrons, of which 6 are valence electrons.
 
@@ -471,7 +471,7 @@ Returns the name of the person who discovered the element.
 
 .. code:: python
 
-    >>> u = Element(element_number=92)
+    >>> u = Element(atomic_number=92)
     >>> u.discoverer
     'Martin Heinrich Klaproth'
 
@@ -482,7 +482,7 @@ Returns the atomic mass of the element in grams per mole.
 
 .. code:: python
 
-    >>> he = Element(element_name="helium")
+    >>> he = Element(name="helium")
     >>> he.atomic_mass
     Quantity(4.0026022, {'g': 1, 'mol': -1})
 
@@ -493,7 +493,7 @@ Returns the state of the element at room temperature.
 
 .. code:: python
 
-    >>> n = Element(element_name="nitrogen")
+    >>> n = Element(name="nitrogen")
     >>> n.state
     'Gas'
 
@@ -504,7 +504,7 @@ Returns the density of the element at room temperature as a Quantity in g/L if t
 
 .. code:: python
 
-    >>> tungsten = Element(element_symbol="W")
+    >>> tungsten = Element(symbol="W")
     >>> tungsten.density
     Quantity(19.25, {'g': 1, 'mL': -1})
 
@@ -515,7 +515,7 @@ Returns the boiling point of the element in Kelvin, as a Quantity.
 
 .. code:: python
 
-    >>> fe = Element(element_name="iron")
+    >>> fe = Element(name="iron")
     >>> fe.boiling_point
     Quantity(3134.0, {'K': 1})
 
@@ -526,7 +526,7 @@ Returns the melting point of the element in Kelvin, as a Quantity.
 
 .. code:: python
 
-    >>> fe = Element(element_name="iron")
+    >>> fe = Element(name="iron")
     >>> fe.melting_point 
     Quantity(1811.0, {'K': 1})
 
@@ -537,7 +537,7 @@ Returns the period of the element.
 
 .. code:: python
 
-    >>> k = Element(element_symbol="K")
+    >>> k = Element(symbol="K")
     >>> k.period
     4
 
@@ -548,7 +548,7 @@ Returns the group of the element.
 
 .. code:: python
 
-    >>> k = Element(element_symbol="K")
+    >>> k = Element(symbol="K")
     >>> k.group
     1
 
@@ -559,7 +559,7 @@ Returns the element's electron configuration as a string.
 
 .. code:: python
 
-    >>> mg = Element(element_symbol="Mg")
+    >>> mg = Element(symbol="Mg")
     >>> mg.electron_config_str
     '1s2 2s2 2p6 3s2'
 
@@ -570,7 +570,7 @@ Returns a dictionary of electron orbitals and electron counts within those orbit
 
 .. code:: python
 
-    >>> mg = Element(element_symbol="Mg")
+    >>> mg = Element(symbol="Mg")
     >>> mg.electron_config 
     {'1s': 2, '2s': 2, '2p': 6, '3s': 2}
 
@@ -581,7 +581,7 @@ Returns a string containing the element's noble gas configuration with the gas.
 
 .. code:: python
 
-    >>> mercury = Element(element_symbol="Hg")
+    >>> mercury = Element(symbol="Hg")
     >>> mercury.noble_gas_config_str
     '[Xe] 4f14 5d10 6s2'
 
@@ -592,9 +592,9 @@ Returns a dictionary, containing the gas, and a nested dictionary of electron or
 
 .. code:: python
 
-    >>> mercury = Element(element_symbol="Hg")
+    >>> mercury = Element(symbol="Hg")
     >>> mercury.noble_gas_config
-    {'gas': Element(element_symbol='Xe'), 'configuration': {'4f': 14, '5d': 10, '6s': 2}}
+    {'gas': Element(symbol='Xe'), 'configuration': {'4f': 14, '5d': 10, '6s': 2}}
 
 :code:`element.electron_affinity`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -603,7 +603,7 @@ Returns the electron affinity of the element.
 
 .. code:: python
 
-    >>> oxygen = Element(element_number=8)
+    >>> oxygen = Element(atomic_number=8)
     >>> oxygen.electron_affinity
     140.976
 
@@ -614,7 +614,7 @@ Returns the Pauling electronegativity of the element.
 
 .. code:: python
 
-    >>> oxygen = Element(element_number=8)
+    >>> oxygen = Element(atomic_number=8)
     >>> oxygen.electronegativity
     3.44
 
