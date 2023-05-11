@@ -375,6 +375,7 @@ Supported operations using the Quantity class involve:
     * Division: With a mumber or a Quantity
     * Addition: With a number (when Quantity is unitless) or a Quantity
     * Exponents: With an integer power
+    * Equality: With another Quantity
 
 Here is an example of them in action:
 
@@ -395,6 +396,11 @@ Here is an example of them in action:
     >>> a3 = f3 / m3            # division
     >>> print(a3)
     2.627*10⁻² m/s²
+
+    >>> c = Quantity(1, {'kN': 1})  
+    >>> d = Quantity(1000, {'kg': 1, 'm': 1, 's': -2})
+    >>> c == d                  # equality
+    True
 
 Element
 -------
